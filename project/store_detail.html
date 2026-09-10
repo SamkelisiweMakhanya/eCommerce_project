@@ -1,0 +1,11 @@
+{% if user.is_authenticated %}
+    {% if user.profile.role == "VENDOR" %}
+        {% if store.vendor == user %}
+
+            <a href="{% url 'product_create' store.id %}">
+                Add Product
+            </a>
+
+        {% endif %}
+    {% endif %}
+{% endif %}

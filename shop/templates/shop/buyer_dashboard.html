@@ -1,0 +1,1204 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Buyer Dashboard | SAMKY TECH SHOP</title>
+
+
+<style>
+
+    /* ==========================================
+       RESET
+       ========================================== */
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+
+    /* ==========================================
+       BODY
+       ========================================== */
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+
+        background: #f5f7fb;
+
+        color: #111827;
+
+        line-height: 1.6;
+    }
+
+
+    /* ==========================================
+       NAVBAR
+       ========================================== */
+
+    .navbar {
+        width: 100%;
+
+        background: #111827;
+
+        color: #ffffff;
+
+        padding: 18px 6%;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 20px;
+
+        flex-wrap: wrap;
+    }
+
+
+    .brand {
+        font-size: 24px;
+
+        font-weight: 800;
+
+        text-decoration: none;
+
+        color: #ffffff;
+
+        letter-spacing: 1px;
+    }
+
+
+    .nav-links {
+        display: flex;
+
+        align-items: center;
+
+        gap: 25px;
+
+        flex-wrap: wrap;
+    }
+
+
+    .nav-links a {
+        color: #ffffff;
+
+        text-decoration: none;
+
+        font-size: 15px;
+
+        font-weight: 600;
+
+        transition: 0.3s ease;
+    }
+
+
+    .nav-links a:hover {
+        color: #60a5fa;
+    }
+
+
+    .logout-button {
+        border: 1px solid #60a5fa;
+
+        background: transparent;
+
+        color: #ffffff;
+
+        padding: 8px 14px;
+
+        border-radius: 8px;
+
+        cursor: pointer;
+
+        font-size: 14px;
+
+        font-weight: 600;
+
+        transition: 0.3s ease;
+    }
+
+
+    .logout-button:hover {
+        background: #2563eb;
+
+        border-color: #2563eb;
+    }
+
+
+    /* ==========================================
+       MAIN DASHBOARD
+       ========================================== */
+
+    .dashboard {
+        max-width: 1200px;
+
+        margin: 0 auto;
+
+        padding: 50px 20px 80px;
+    }
+
+
+    /* ==========================================
+       WELCOME
+       ========================================== */
+
+    .welcome {
+        background: #ffffff;
+
+        padding: 35px;
+
+        border-radius: 16px;
+
+        box-shadow:
+            0 5px 20px
+            rgba(0, 0, 0, 0.06);
+
+        margin-bottom: 30px;
+
+        border-left: 5px solid #2563eb;
+    }
+
+
+    .welcome h1 {
+        font-size: 32px;
+
+        margin-bottom: 10px;
+
+        color: #111827;
+    }
+
+
+    .welcome p {
+        color: #6b7280;
+
+        font-size: 16px;
+    }
+
+
+    .welcome strong {
+        color: #2563eb;
+    }
+
+
+    /* ==========================================
+       QUICK ACTIONS
+       ========================================== */
+
+    .quick-actions {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 25px;
+
+        margin-bottom: 30px;
+    }
+
+
+    .action-card {
+        background: #ffffff;
+
+        padding: 30px 25px;
+
+        border-radius: 14px;
+
+        text-decoration: none;
+
+        color: #111827;
+
+        box-shadow:
+            0 5px 20px
+            rgba(0, 0, 0, 0.06);
+
+        transition: 0.3s ease;
+
+        border-top: 4px solid #2563eb;
+    }
+
+
+    .action-card:hover {
+        transform: translateY(-5px);
+
+        box-shadow:
+            0 8px 25px
+            rgba(37, 99, 235, 0.12);
+    }
+
+
+    .action-icon {
+        font-size: 40px;
+
+        margin-bottom: 15px;
+    }
+
+
+    .action-card h3 {
+        margin-bottom: 8px;
+
+        font-size: 20px;
+
+        color: #111827;
+    }
+
+
+    .action-card p {
+        color: #6b7280;
+
+        font-size: 15px;
+
+        line-height: 1.6;
+    }
+
+
+    /* ==========================================
+       STATISTICS
+       ========================================== */
+
+    .stats {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 25px;
+
+        margin-bottom: 30px;
+    }
+
+
+    .stat-card {
+        background: #ffffff;
+
+        padding: 30px 25px;
+
+        border-radius: 14px;
+
+        box-shadow:
+            0 5px 20px
+            rgba(0, 0, 0, 0.06);
+
+        border-bottom: 4px solid #2563eb;
+    }
+
+
+    .stat-label {
+        color: #6b7280;
+
+        font-size: 14px;
+
+        margin-bottom: 10px;
+
+        font-weight: 600;
+    }
+
+
+    .stat-number {
+        font-size: 32px;
+
+        font-weight: 800;
+
+        color: #2563eb;
+    }
+
+
+    /* ==========================================
+       ORDERS SECTION
+       ========================================== */
+
+    .orders-section {
+        background: #ffffff;
+
+        padding: 35px;
+
+        border-radius: 16px;
+
+        box-shadow:
+            0 5px 20px
+            rgba(0, 0, 0, 0.06);
+    }
+
+
+    .section-header {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 15px;
+
+        margin-bottom: 25px;
+    }
+
+
+    .section-header h2 {
+        font-size: 26px;
+
+        color: #111827;
+    }
+
+
+    .view-all {
+        color: #2563eb;
+
+        text-decoration: none;
+
+        font-size: 14px;
+
+        font-weight: 700;
+
+        transition: 0.3s ease;
+    }
+
+
+    .view-all:hover {
+        color: #1d4ed8;
+    }
+
+
+    /* ==========================================
+       ORDER CARD
+       ========================================== */
+
+    .order-card {
+        border: 1px solid #e5e7eb;
+
+        border-radius: 12px;
+
+        padding: 22px;
+
+        margin-bottom: 15px;
+
+        transition: 0.3s ease;
+    }
+
+
+    .order-card:last-child {
+        margin-bottom: 0;
+    }
+
+
+    .order-card:hover {
+        border-color: #93c5fd;
+
+        box-shadow:
+            0 5px 18px
+            rgba(37, 99, 235, 0.08);
+
+        transform: translateY(-2px);
+    }
+
+
+    .order-top {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 15px;
+
+        margin-bottom: 15px;
+    }
+
+
+    .order-number {
+        font-size: 18px;
+
+        font-weight: 800;
+
+        color: #111827;
+    }
+
+
+    .order-date {
+        color: #6b7280;
+
+        font-size: 13px;
+
+        margin-top: 5px;
+    }
+
+
+    /* ==========================================
+       STATUS
+       ========================================== */
+
+    .status {
+        display: inline-block;
+
+        padding: 6px 12px;
+
+        border-radius: 20px;
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        background: #dbeafe;
+
+        color: #1e3a8a;
+    }
+
+
+    .status-pending {
+        background: #fef3c7;
+
+        color: #92400e;
+    }
+
+
+    .status-confirmed {
+        background: #dbeafe;
+
+        color: #1e40af;
+    }
+
+
+    .status-processing {
+        background: #dbeafe;
+
+        color: #1e40af;
+    }
+
+
+    .status-shipped {
+        background: #bfdbfe;
+
+        color: #1e3a8a;
+    }
+
+
+    .status-delivered {
+        background: #d1fae5;
+
+        color: #065f46;
+    }
+
+
+    .status-cancelled {
+        background: #fee2e2;
+
+        color: #991b1b;
+    }
+
+
+    /* ==========================================
+       ORDER DETAILS
+       ========================================== */
+
+    .order-details {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 15px;
+
+        padding-top: 18px;
+
+        border-top: 1px solid #e5e7eb;
+    }
+
+
+    .detail-label {
+        display: block;
+
+        color: #9ca3af;
+
+        font-size: 12px;
+
+        margin-bottom: 5px;
+    }
+
+
+    .detail-value {
+        font-weight: 700;
+
+        font-size: 15px;
+
+        color: #111827;
+    }
+
+
+    /* ==========================================
+       ORDER BUTTON
+       ========================================== */
+
+    .order-actions {
+        margin-top: 20px;
+
+        display: flex;
+
+        justify-content: flex-end;
+    }
+
+
+    .view-order {
+        display: inline-block;
+
+        background: #2563eb;
+
+        color: #ffffff;
+
+        text-decoration: none;
+
+        padding: 11px 20px;
+
+        border-radius: 8px;
+
+        font-size: 14px;
+
+        font-weight: 700;
+
+        transition: 0.3s ease;
+    }
+
+
+    .view-order:hover {
+        background: #1d4ed8;
+
+        transform: translateY(-2px);
+    }
+
+
+    /* ==========================================
+       EMPTY ORDERS
+       ========================================== */
+
+    .empty-orders {
+        text-align: center;
+
+        padding: 60px 20px;
+
+        color: #6b7280;
+    }
+
+
+    .empty-icon {
+        font-size: 55px;
+
+        margin-bottom: 15px;
+    }
+
+
+    .empty-orders h3 {
+        color: #111827;
+
+        font-size: 22px;
+
+        margin-bottom: 8px;
+    }
+
+
+    .empty-orders p {
+        margin-bottom: 25px;
+
+        color: #6b7280;
+    }
+
+
+    .shop-button {
+        display: inline-block;
+
+        background: #2563eb;
+
+        color: #ffffff;
+
+        text-decoration: none;
+
+        padding: 13px 25px;
+
+        border-radius: 8px;
+
+        font-size: 14px;
+
+        font-weight: 700;
+
+        transition: 0.3s ease;
+    }
+
+
+    .shop-button:hover {
+        background: #1d4ed8;
+
+        transform: translateY(-2px);
+    }
+
+
+    /* ==========================================
+       FOOTER
+       ========================================== */
+
+    .footer {
+        background: #111827;
+
+        color: #ffffff;
+
+        text-align: center;
+
+        padding: 35px 20px;
+    }
+
+
+    .footer p {
+        color: #9ca3af;
+
+        font-size: 14px;
+    }
+
+
+    /* ==========================================
+       TABLET
+       ========================================== */
+
+    @media (max-width: 900px) {
+
+        .quick-actions {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+
+        .stats {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+
+        .order-details {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+    }
+
+
+    /* ==========================================
+       MOBILE
+       ========================================== */
+
+    @media (max-width: 700px) {
+
+        .navbar {
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 18px 5%;
+        }
+
+
+        .nav-links {
+            justify-content: center;
+
+            gap: 15px;
+        }
+
+
+        .dashboard {
+            width: 92%;
+
+            padding: 40px 0 55px;
+        }
+
+
+        .welcome {
+            padding: 25px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .welcome h1 {
+            font-size: 25px;
+        }
+
+
+        .quick-actions {
+            grid-template-columns: 1fr;
+
+            gap: 20px;
+        }
+
+
+        .stats {
+            grid-template-columns: 1fr;
+
+            gap: 20px;
+        }
+
+
+        .orders-section {
+            padding: 25px 20px;
+        }
+
+
+        .section-header {
+            flex-direction: column;
+
+            align-items: flex-start;
+        }
+
+
+        .order-top {
+            flex-direction: column;
+
+            align-items: flex-start;
+        }
+
+
+        .order-details {
+            grid-template-columns: 1fr;
+        }
+
+
+        .order-actions {
+            justify-content: stretch;
+        }
+
+
+        .view-order {
+            width: 100%;
+
+            text-align: center;
+        }
+
+    }
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     NAVIGATION
+     ========================================== -->
+
+<nav class="navbar">
+
+
+    <a
+        href="{% url 'home' %}"
+        class="brand"
+    >
+        SAMKY TECH SHOP
+    </a>
+
+
+    <div class="nav-links">
+
+
+        <a href="{% url 'home' %}">
+            Home
+        </a>
+
+
+        <a href="{% url 'product_list' %}">
+            Shop
+        </a>
+
+
+        <a href="{% url 'my_orders' %}">
+            My Orders
+        </a>
+
+
+        <form
+            method="POST"
+            action="{% url 'logout' %}"
+            style="display:inline;"
+        >
+
+            {% csrf_token %}
+
+
+            <button
+                type="submit"
+                class="logout-button"
+            >
+                Logout
+            </button>
+
+        </form>
+
+
+    </div>
+
+</nav>
+
+
+<!-- ==========================================
+     DASHBOARD
+     ========================================== -->
+
+<main class="dashboard">
+
+
+    <!-- WELCOME -->
+
+    <section class="welcome">
+
+        <h1>
+            Welcome back,
+            {{ request.user.username }}!
+        </h1>
+
+
+        <p>
+            Manage your orders and continue shopping
+            from your buyer dashboard.
+        </p>
+
+    </section>
+
+
+
+    <!-- QUICK ACTIONS -->
+
+    <section class="quick-actions">
+
+
+        <a
+            href="{% url 'product_list' %}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                🛍️
+            </div>
+
+
+            <h3>
+                Continue Shopping
+            </h3>
+
+
+            <p>
+                Browse our products and discover
+                something you'll love.
+            </p>
+
+        </a>
+
+
+
+        <a
+            href="{% url 'my_orders' %}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                📦
+            </div>
+
+
+            <h3>
+                My Orders
+            </h3>
+
+
+            <p>
+                View your previous purchases and
+                track your orders.
+            </p>
+
+        </a>
+
+
+
+        <a
+            href="{% url 'product_list' %}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                🛒
+            </div>
+
+
+            <h3>
+                Shop Now
+            </h3>
+
+
+            <p>
+                Explore products from our stores
+                and place a new order.
+            </p>
+
+        </a>
+
+
+    </section>
+
+
+
+    <!-- ======================================
+         STATISTICS
+         ====================================== -->
+
+    <section class="stats">
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Total Orders
+            </div>
+
+
+            <div class="stat-number">
+                {{ orders|length }}
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Account
+            </div>
+
+
+            <div class="stat-number">
+                Buyer
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Shopping
+            </div>
+
+
+            <div class="stat-number">
+                Active
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ======================================
+         ORDERS
+         ====================================== -->
+
+    <section class="orders-section">
+
+
+        <div class="section-header">
+
+            <h2>
+                Recent Orders
+            </h2>
+
+
+            <a
+                href="{% url 'my_orders' %}"
+                class="view-all"
+            >
+                View All Orders →
+            </a>
+
+        </div>
+
+
+
+        {% if orders %}
+
+
+            {% for order in orders|slice:":5" %}
+
+
+                <div class="order-card">
+
+
+                    <div class="order-top">
+
+
+                        <div>
+
+                            <div class="order-number">
+                                Order #{{ order.id }}
+                            </div>
+
+
+                            <div class="order-date">
+
+                                {{ order.created_at|date:"d M Y, H:i" }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="status">
+
+                                {{ order.get_status_display }}
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="order-details">
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Order Number
+                            </span>
+
+
+                            <span class="detail-value">
+                                #{{ order.id }}
+                            </span>
+
+                        </div>
+
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Status
+                            </span>
+
+
+                            <span class="detail-value">
+                                {{ order.get_status_display }}
+                            </span>
+
+                        </div>
+
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Date
+                            </span>
+
+
+                            <span class="detail-value">
+                                {{ order.created_at|date:"d M Y" }}
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="order-actions">
+
+                        <a
+                            href="{% url 'order_detail' order.id %}"
+                            class="view-order"
+                        >
+                            View Order
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="empty-orders">
+
+
+                <div class="empty-icon">
+                    📦
+                </div>
+
+
+                <h3>
+                    No Orders Yet
+                </h3>
+
+
+                <p>
+                    You haven't placed an order yet.
+                    Start shopping to see your orders here.
+                </p>
+
+
+                <a
+                    href="{% url 'product_list' %}"
+                    class="shop-button"
+                >
+                    Start Shopping
+                </a>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+</main>
+
+
+<!-- ==========================================
+     FOOTER
+     ========================================== -->
+
+<footer class="footer">
+
+    <p>
+        &copy; 2026 SAMKY TECH SHOP.
+        All rights reserved.
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>

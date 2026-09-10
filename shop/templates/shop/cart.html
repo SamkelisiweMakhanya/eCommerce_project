@@ -1,0 +1,1062 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cart | SAMKY TECH SHOP</title>
+
+
+    <style>
+
+        /* ==========================================
+           RESET
+           ========================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* ==========================================
+           BODY
+           ========================================== */
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #111827;
+        }
+
+
+        /* ==========================================
+           NAVIGATION
+           ========================================== */
+
+        nav {
+            width: 100%;
+
+            background: #111827;
+
+            padding: 18px 6%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .brand {
+            color: #ffffff;
+
+            font-size: 24px;
+
+            font-weight: 800;
+
+            text-decoration: none;
+
+            letter-spacing: 1px;
+        }
+
+
+        .nav-links {
+            display: flex;
+
+            align-items: center;
+
+            gap: 25px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .nav-links a {
+            color: #ffffff;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            transition: 0.3s ease;
+        }
+
+
+        .nav-links a:hover {
+            color: #60a5fa;
+        }
+
+
+        /* ==========================================
+           PAGE HEADER
+           ========================================== */
+
+        .page-header {
+            background: #ffffff;
+            color: #111827;
+            padding: 60px 20px;
+            text-align: center;
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.06);
+        }
+
+
+        .page-header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+
+        .page-header p {
+            color: #6b7280;
+            font-size: 17px;
+        }
+
+
+        .page-header h1 {
+            font-size: 42px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .page-header p {
+            color: #6b7280;
+            font-size: 17px;
+        }
+
+
+        /* ==========================================
+           CART CONTAINER
+           ========================================== */
+
+        .cart-container {
+            width: 90%;
+
+            max-width: 1150px;
+
+            margin: 50px auto 80px;
+        }
+
+
+        /* ==========================================
+           CART ITEM
+           ========================================== */
+
+        .cart-item {
+            background: #ffffff;
+
+            border-radius: 16px;
+
+            padding: 25px;
+
+            margin-bottom: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 25px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.07);
+
+            transition: 0.3s ease;
+        }
+
+
+        .cart-item:hover {
+            transform: translateY(-3px);
+        }
+
+
+        /* ==========================================
+           PRODUCT INFORMATION
+           ========================================== */
+
+        .product-info {
+            flex: 1;
+        }
+
+
+        .product-info h2 {
+            font-size: 22px;
+
+            margin-bottom: 8px;
+
+            color: #111827;
+        }
+
+
+        .product-description {
+            color: #6b7280;
+
+            font-size: 15px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .store-name {
+            color: #2563eb;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 10px;
+        }
+
+
+        .product-price {
+            color: #1e3a8a;
+
+            font-size: 18px;
+
+            font-weight: 800;
+        }
+
+
+        /* ==========================================
+           QUANTITY
+           ========================================== */
+
+        .quantity-form {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .quantity-input {
+            width: 75px;
+
+            padding: 10px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            text-align: center;
+
+            outline: none;
+        }
+
+
+        .quantity-input:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 99, 235, 0.12);
+        }
+
+
+        /* ==========================================
+           BUTTONS
+           ========================================== */
+
+        .update-button {
+            border: none;
+
+            padding: 10px 16px;
+
+            background: #2563eb;
+
+            color: #ffffff;
+
+            border-radius: 8px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.3s ease;
+        }
+
+
+        .update-button:hover {
+            background: #1d4ed8;
+
+            transform: translateY(-2px);
+        }
+
+
+        .remove-button {
+            border: none;
+
+            padding: 10px 16px;
+
+            background: #111827;
+
+            color: #ffffff;
+
+            border-radius: 8px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.3s ease;
+        }
+
+
+        .remove-button:hover {
+            background: #1e3a8a;
+
+            transform: translateY(-2px);
+        }
+
+
+        /* ==========================================
+           SUBTOTAL
+           ========================================== */
+
+        .item-subtotal {
+            min-width: 120px;
+
+            text-align: right;
+        }
+
+
+        .item-subtotal span {
+            display: block;
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+            margin-bottom: 3px;
+        }
+
+
+        .item-subtotal strong {
+            color: #111827;
+
+            font-size: 20px;
+        }
+
+
+        /* ==========================================
+           CART SUMMARY
+           ========================================== */
+
+        .cart-summary {
+            background: #ffffff;
+
+            border-radius: 16px;
+
+            padding: 35px;
+
+            margin-top: 30px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.06);
+        }
+
+
+        .summary-title {
+            font-size: 25px;
+
+            margin-bottom: 20px;
+
+            color: #111827;
+        }
+
+
+        .summary-row {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 12px 0;
+
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .summary-row span {
+            color: #6b7280;
+        }
+
+
+        .summary-row strong {
+            color: #111827;
+        }
+
+
+        .total-row {
+            margin-top: 10px;
+
+            padding-top: 20px;
+
+            border-top: 2px solid #e5e7eb;
+        }
+
+
+        .total-row span {
+            color: #111827;
+
+            font-size: 20px;
+
+            font-weight: 800;
+        }
+
+
+        .total-row strong {
+            color: #2563eb;
+
+            font-size: 26px;
+
+            font-weight: 800;
+        }
+
+
+        /* ==========================================
+           CHECKOUT BUTTON
+           ========================================== */
+
+        .checkout-button {
+            display: block;
+
+            width: 100%;
+
+            margin-top: 25px;
+
+            padding: 15px 25px;
+
+            background: #2563eb;
+
+            color: #ffffff;
+
+            text-decoration: none;
+
+            text-align: center;
+
+            border-radius: 8px;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            transition: 0.3s ease;
+        }
+
+
+        .checkout-button:hover {
+            background: #1d4ed8;
+
+            transform: translateY(-2px);
+        }
+
+
+        /* ==========================================
+           CONTINUE SHOPPING
+           ========================================== */
+
+        .continue-shopping {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #2563eb;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            transition: 0.3s ease;
+        }
+
+
+        .continue-shopping:hover {
+            color: #1e3a8a;
+        }
+
+
+        /* ==========================================
+           EMPTY CART
+           ========================================== */
+
+        .empty-cart {
+            background: #ffffff;
+
+            border-radius: 16px;
+
+            padding: 70px 30px;
+
+            text-align: center;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.06);
+        }
+
+
+        .empty-cart-icon {
+            font-size: 60px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .empty-cart h2 {
+            font-size: 30px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .empty-cart p {
+            color: #6b7280;
+
+            margin-bottom: 25px;
+        }
+
+
+        .shop-button {
+            display: inline-block;
+
+            padding: 13px 25px;
+
+            background: #2563eb;
+
+            color: #ffffff;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-weight: 700;
+
+            transition: 0.3s ease;
+        }
+
+
+        .shop-button:hover {
+            background: #1d4ed8;
+
+            transform: translateY(-2px);
+        }
+
+
+        /* ==========================================
+           FOOTER
+           ========================================== */
+
+        footer {
+            background: #111827;
+
+            color: #ffffff;
+
+            padding: 35px 6%;
+
+            text-align: center;
+        }
+
+
+        footer p {
+            color: #9ca3af;
+
+            font-size: 14px;
+        }
+
+
+        /* ==========================================
+           TABLET
+           ========================================== */
+
+        @media (max-width: 900px) {
+
+            .cart-item {
+                align-items: flex-start;
+
+                flex-wrap: wrap;
+            }
+
+
+            .item-subtotal {
+                width: 100%;
+
+                text-align: left;
+            }
+
+        }
+
+
+        /* ==========================================
+           MOBILE
+           ========================================== */
+
+        @media (max-width: 700px) {
+
+            nav {
+                justify-content: center;
+
+                text-align: center;
+            }
+
+
+            .nav-links {
+                justify-content: center;
+
+                gap: 15px;
+            }
+
+
+            .page-header {
+                padding: 45px 20px;
+            }
+
+
+            .page-header h1 {
+                font-size: 32px;
+            }
+
+
+            .cart-container {
+                width: 92%;
+
+                margin: 35px auto 55px;
+            }
+
+
+            .cart-item {
+                padding: 22px;
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+                gap: 18px;
+            }
+
+
+            .quantity-form {
+                width: 100%;
+
+                justify-content: flex-start;
+            }
+
+
+            .item-subtotal {
+                width: 100%;
+
+                text-align: left;
+            }
+
+
+            .cart-summary {
+                padding: 25px 20px;
+            }
+
+
+            .summary-title {
+                font-size: 22px;
+            }
+
+
+            .total-row span {
+                font-size: 18px;
+            }
+
+
+            .total-row strong {
+                font-size: 23px;
+            }
+
+        }
+
+
+        /* ==========================================
+           PRINT
+           ========================================== */
+
+        @media print {
+
+            nav,
+            footer,
+            .checkout-button,
+            .continue-shopping,
+            .update-button,
+            .remove-button {
+                display: none;
+            }
+
+
+            body {
+                background: #ffffff;
+            }
+
+
+            .cart-item,
+            .cart-summary {
+                box-shadow: none;
+
+                border: 1px solid #ddd;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     NAVIGATION
+     ========================================== -->
+
+<nav>
+
+    <a
+        href="{% url 'home' %}"
+        class="brand"
+    >
+        SAMKY TECH SHOP
+    </a>
+
+
+    <div class="nav-links">
+
+        <a href="{% url 'home' %}">
+            Home
+        </a>
+
+
+        <a href="{% url 'product_list' %}">
+            Products
+        </a>
+
+
+        <a href="{% url 'cart' %}">
+            Cart
+        </a>
+
+
+        {% if user.is_authenticated %}
+
+            <a href="{% url 'my_orders' %}">
+                My Orders
+            </a>
+
+
+            <a href="{% url 'buyer_dashboard' %}">
+                Dashboard
+            </a>
+
+
+            <a href="{% url 'logout' %}">
+                Logout
+            </a>
+
+        {% else %}
+
+            <a href="{% url 'login' %}">
+                Login
+            </a>
+
+
+            <a href="{% url 'register' %}">
+                Register
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</nav>
+
+
+<!-- ==========================================
+     PAGE HEADER
+     ========================================== -->
+
+<section class="page-header">
+
+    <h1>
+        Your Shopping Cart
+    </h1>
+
+
+    <p>
+        Review your selected technology products
+        before checkout.
+    </p>
+
+</section>
+
+
+<!-- ==========================================
+     CART
+     ========================================== -->
+
+<div class="cart-container">
+
+
+{% if cart_items %}
+
+
+    {% for item in cart_items %}
+
+
+        <!-- CART ITEM -->
+
+        <div class="cart-item">
+
+
+            <div class="product-info">
+
+                <h2>
+                    {{ item.product.name }}
+                </h2>
+
+
+                <p class="product-description">
+                    {{ item.product.description }}
+                </p>
+
+
+                <p class="store-name">
+                    {{ item.product.store.name }}
+                </p>
+
+
+                <p class="product-price">
+                    R{{ item.price }}
+                </p>
+
+            </div>
+
+
+            <!-- QUANTITY -->
+
+            <form
+                method="POST"
+                action="{% url 'update_cart' item.id %}"
+                class="quantity-form"
+            >
+
+                {% csrf_token %}
+
+
+                <input
+                    type="number"
+                    name="quantity"
+                    value="{{ item.quantity }}"
+                    min="1"
+                    class="quantity-input"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    class="update-button"
+                >
+                    Update
+                </button>
+
+            </form>
+
+
+            <!-- REMOVE -->
+
+            <form
+                method="POST"
+                action="{% url 'remove_from_cart' item.id %}"
+            >
+
+                {% csrf_token %}
+
+
+                <button
+                    type="submit"
+                    class="remove-button"
+                >
+                    Remove
+                </button>
+
+            </form>
+
+
+            <!-- SUBTOTAL -->
+
+            <div class="item-subtotal">
+
+                <span>
+                    Subtotal
+                </span>
+
+
+                <strong>
+                    R{{ item.subtotal }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+    {% endfor %}
+
+
+    <!-- ======================================
+         CART SUMMARY
+         ====================================== -->
+
+    <div class="cart-summary">
+
+
+        <h2 class="summary-title">
+            Cart Summary
+        </h2>
+
+
+        <div class="summary-row">
+
+            <span>
+                Items
+            </span>
+
+
+            <strong>
+                {{ cart_items|length }}
+            </strong>
+
+        </div>
+
+
+        <div class="summary-row total-row">
+
+            <span>
+                Total
+            </span>
+
+
+            <strong>
+                R{{ total }}
+            </strong>
+
+        </div>
+
+
+        <a
+            href="{% url 'checkout' %}"
+            class="checkout-button"
+        >
+            Proceed to Checkout
+        </a>
+
+
+        <a
+            href="{% url 'product_list' %}"
+            class="continue-shopping"
+        >
+            ← Continue Shopping
+        </a>
+
+
+    </div>
+
+
+{% else %}
+
+
+    <!-- ======================================
+         EMPTY CART
+         ====================================== -->
+
+    <div class="empty-cart">
+
+        <div class="empty-cart-icon">
+            🛒
+        </div>
+
+
+        <h2>
+            Your Cart is Empty
+        </h2>
+
+
+        <p>
+            You haven't added any products to
+            your cart yet.
+        </p>
+
+
+        <a
+            href="{% url 'product_list' %}"
+            class="shop-button"
+        >
+            Start Shopping
+        </a>
+
+    </div>
+
+
+{% endif %}
+
+
+</div>
+
+
+<!-- ==========================================
+     FOOTER
+     ========================================== -->
+
+<footer>
+
+    <p>
+        &copy; 2026 SAMKY TECH SHOP.
+        All rights reserved.
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>

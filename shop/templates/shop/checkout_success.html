@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Order Successful | Your Store</title>
+
+
+<style>
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+
+        min-height: 100vh;
+
+        background-color: #f5f6f8;
+
+        color: #222;
+
+        display: flex;
+
+        flex-direction: column;
+    }
+
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .navbar {
+        background-color: #222;
+
+        color: white;
+
+        padding: 16px 30px;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 20px;
+    }
+
+
+    .brand {
+        color: white;
+
+        text-decoration: none;
+
+        font-size: 23px;
+
+        font-weight: bold;
+    }
+
+
+    .nav-links {
+        display: flex;
+
+        align-items: center;
+
+        gap: 20px;
+    }
+
+
+    .nav-links a {
+        color: white;
+
+        text-decoration: none;
+
+        font-size: 14px;
+    }
+
+
+    .nav-links a:hover {
+        text-decoration: underline;
+    }
+
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .container {
+        width: 100%;
+
+        max-width: 800px;
+
+        margin: auto;
+
+        padding: 50px 20px;
+    }
+
+
+    /* =========================
+       SUCCESS CARD
+    ========================= */
+
+    .success-card {
+        background-color: white;
+
+        border-radius: 14px;
+
+        padding: 45px;
+
+        text-align: center;
+
+        box-shadow:
+            0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+
+
+    /* =========================
+       SUCCESS ICON
+    ========================= */
+
+    .success-icon {
+        width: 80px;
+
+        height: 80px;
+
+        margin: 0 auto 25px;
+
+        border-radius: 50%;
+
+        background-color: #e8f5e9;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        font-size: 42px;
+    }
+
+
+    /* =========================
+       HEADING
+    ========================= */
+
+    .success-card h1 {
+        font-size: 32px;
+
+        margin-bottom: 12px;
+    }
+
+
+    .success-message {
+        color: #666;
+
+        line-height: 1.6;
+
+        font-size: 15px;
+
+        margin-bottom: 30px;
+    }
+
+
+    /* =========================
+       ORDER INFORMATION
+    ========================= */
+
+    .order-info {
+        background-color: #f8f8f8;
+
+        border-radius: 10px;
+
+        padding: 25px;
+
+        margin-bottom: 30px;
+
+        text-align: left;
+    }
+
+
+    .order-info h2 {
+        font-size: 19px;
+
+        margin-bottom: 18px;
+
+        text-align: center;
+    }
+
+
+    .info-row {
+        display: flex;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        padding: 11px 0;
+
+        border-bottom: 1px solid #ddd;
+
+        font-size: 14px;
+    }
+
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+
+    .info-label {
+        color: #777;
+    }
+
+
+    .info-value {
+        font-weight: bold;
+
+        text-align: right;
+    }
+
+
+    .order-total {
+        font-size: 20px;
+
+        font-weight: bold;
+    }
+
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .status {
+        display: inline-block;
+
+        padding: 6px 12px;
+
+        border-radius: 20px;
+
+        background-color: #fff3cd;
+
+        color: #856404;
+
+        font-size: 12px;
+
+        font-weight: bold;
+    }
+
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .actions {
+        display: flex;
+
+        justify-content: center;
+
+        flex-wrap: wrap;
+
+        gap: 12px;
+
+        margin-top: 25px;
+    }
+
+
+    .button {
+        display: inline-block;
+
+        padding: 12px 20px;
+
+        border-radius: 7px;
+
+        text-decoration: none;
+
+        font-size: 14px;
+
+        font-weight: bold;
+
+        transition:
+            background-color 0.2s,
+            transform 0.1s;
+    }
+
+
+    .button:hover {
+        transform: translateY(-1px);
+    }
+
+
+    .primary-button {
+        background-color: #222;
+
+        color: white;
+    }
+
+
+    .primary-button:hover {
+        background-color: #444;
+    }
+
+
+    .secondary-button {
+        background-color: #eee;
+
+        color: #222;
+    }
+
+
+    .secondary-button:hover {
+        background-color: #ddd;
+    }
+
+
+    .success-note {
+        margin-top: 30px;
+
+        padding-top: 20px;
+
+        border-top: 1px solid #eee;
+
+        color: #777;
+
+        font-size: 13px;
+
+        line-height: 1.6;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .footer {
+        text-align: center;
+
+        padding: 25px 20px;
+
+        color: #888;
+
+        font-size: 13px;
+
+        margin-top: auto;
+    }
+
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 600px) {
+
+        .navbar {
+            padding: 15px 20px;
+
+            flex-direction: column;
+
+            align-items: flex-start;
+        }
+
+
+        .nav-links {
+            width: 100%;
+
+            justify-content: space-between;
+        }
+
+
+        .container {
+            padding: 25px 15px;
+        }
+
+
+        .success-card {
+            padding: 30px 20px;
+        }
+
+
+        .success-card h1 {
+            font-size: 26px;
+        }
+
+
+        .success-icon {
+            width: 70px;
+
+            height: 70px;
+
+            font-size: 35px;
+        }
+
+
+        .info-row {
+            flex-direction: column;
+
+            gap: 4px;
+        }
+
+
+        .info-value {
+            text-align: left;
+        }
+
+
+        .actions {
+            flex-direction: column;
+        }
+
+
+        .button {
+            width: 100%;
+
+            text-align: center;
+        }
+
+    }
+
+
+    /* =========================
+       PRINT
+    ========================= */
+
+    @media print {
+
+        body {
+            background-color: white;
+        }
+
+
+        .navbar,
+        .actions,
+        .footer {
+            display: none !important;
+        }
+
+
+        .container {
+            max-width: none;
+
+            padding: 0;
+        }
+
+
+        .success-card {
+            box-shadow: none;
+
+            border: 1px solid #ddd;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav class="navbar">
+
+<a
+    href="{% url 'product_list' %}"
+    class="brand"
+>
+    SAMKY TECH SHOP
+</a>
+
+
+<div class="nav-links">
+
+
+    <a href="{% url 'product_list' %}">
+        Shop
+    </a>
+
+
+    <a href="{% url 'buyer_dashboard' %}">
+        Dashboard
+    </a>
+
+
+    <a href="{% url 'my_orders' %}">
+        My Orders
+    </a>
+
+
+</div>
+
+</nav>
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="container">
+
+```
+<div class="success-card">
+
+
+    <!-- Success Icon -->
+
+    <div class="success-icon">
+        ✓
+    </div>
+
+
+
+    <!-- Heading -->
+
+    <h1>
+        Order Successful!
+    </h1>
+
+
+    <p class="success-message">
+
+        Thank you,
+        <strong>{{ order.buyer.username }}</strong>!
+
+        <br>
+
+        Your order has been placed successfully.
+
+    </p>
+
+
+
+    <!-- Order Information -->
+
+    <div class="order-info">
+
+
+        <h2>
+            Order Details
+        </h2>
+
+
+        <div class="info-row">
+
+
+            <span class="info-label">
+                Order Number
+            </span>
+
+
+            <span class="info-value">
+                #{{ order.id }}
+            </span>
+
+
+        </div>
+
+
+
+        <div class="info-row">
+
+
+            <span class="info-label">
+                Order Date
+            </span>
+
+
+            <span class="info-value">
+
+                {{ order.created_at|date:"d M Y, H:i" }}
+
+            </span>
+
+
+        </div>
+
+
+
+        <div class="info-row">
+
+
+            <span class="info-label">
+                Buyer
+            </span>
+
+
+            <span class="info-value">
+
+                {{ order.buyer.username }}
+
+            </span>
+
+
+        </div>
+
+
+
+        <div class="info-row">
+
+
+            <span class="info-label">
+                Status
+            </span>
+
+
+            <span class="info-value">
+
+
+                <span class="status">
+
+                    {{ order.get_status_display }}
+
+                </span>
+
+
+            </span>
+
+
+        </div>
+
+
+
+        <div class="info-row">
+
+
+            <span class="info-label">
+                Order Total
+            </span>
+
+
+            <span class="info-value order-total">
+
+                R{{ total }}
+
+            </span>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- Buttons -->
+
+    <div class="actions">
+
+
+        <a
+            href="{% url 'order_detail' order.id %}"
+            class="button primary-button"
+        >
+            View Invoice
+        </a>
+
+
+        <a
+            href="{% url 'my_orders' %}"
+            class="button secondary-button"
+        >
+            My Orders
+        </a>
+
+
+        <a
+            href="{% url 'product_list' %}"
+            class="button secondary-button"
+        >
+            Continue Shopping
+        </a>
+
+
+    </div>
+
+
+
+    <!-- Note -->
+
+    <div class="success-note">
+
+        <p>
+            Your order has been recorded successfully.
+        </p>
+
+        <p>
+            Please keep your order number
+            <strong>#{{ order.id }}</strong>
+            for your records.
+        </p>
+
+    </div>
+
+
+</div>
+
+</main>
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="footer">
+
+© 2026 SAMKY TECH SHOP.
+All rights reserved.
+
+</footer>
+
+</body>
+
+</html>

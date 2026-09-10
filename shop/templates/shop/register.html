@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | SAMKY TECH STORE</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR */
+        nav {
+            background: #111827;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 22px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .login-link {
+            background: #2563eb;
+            color: white !important;
+            padding: 9px 16px;
+            border-radius: 7px;
+        }
+
+        .login-link:hover {
+            background: #1d4ed8;
+        }
+
+        /* MAIN */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-radius: 14px;
+            padding: 38px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .register-icon {
+            width: 64px;
+            height: 64px;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 30px;
+        }
+
+        .register-header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .register-header p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* MESSAGES */
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px 14px;
+            border-radius: 7px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* FORM */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .help-text {
+            display: block;
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .error-list {
+            list-style: none;
+            margin-top: 6px;
+        }
+
+        .error-list li {
+            color: #dc2626;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .non-field-errors {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        /* PASSWORD */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 70px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            color: #2563eb;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* BUTTON */
+        .register-btn {
+            width: 100%;
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 13px;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: 0.2s;
+        }
+
+        .register-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* LOGIN */
+        .login-text {
+            text-align: center;
+            margin-top: 22px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .login-text a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #111827;
+            color: #9ca3af;
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 650px) {
+            nav {
+                padding: 16px 5%;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a:not(.login-link) {
+                display: none;
+            }
+
+            main {
+                padding: 30px 15px;
+                align-items: flex-start;
+            }
+
+            .register-card {
+                padding: 28px 22px;
+            }
+
+            .register-header h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <a href="{% url 'home' %}" class="logo">Your Store</a>
+
+    <div class="nav-links">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'product_list' %}">Products</a>
+        <a href="{% url 'login' %}" class="login-link">Login</a>
+    </div>
+</nav>
+
+
+<!-- MAIN -->
+<main>
+
+    <div class="register-card">
+
+        <div class="register-header">
+            <div class="register-icon">
+                👤
+            </div>
+
+            <h1>Create Account</h1>
+            <p>Join our store and start shopping today.</p>
+        </div>
+
+
+        <!-- DJANGO MESSAGES -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
+        <!-- REGISTRATION FORM -->
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+
+            <!-- USERNAME -->
+            <div class="form-group">
+                <label for="id_username">Username</label>
+
+                <input
+                    type="text"
+                    name="username"
+                    id="id_username"
+                    value="{{ form.username.value|default:'' }}"
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                    required
+                >
+
+                {% if form.username.errors %}
+                    <ul class="error-list">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+
+            <!-- EMAIL -->
+            <div class="form-group">
+                <label for="id_email">Email Address</label>
+
+                <input
+                    type="email"
+                    name="email"
+                    id="id_email"
+                    value="{{ form.email.value|default:'' }}"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                >
+
+                {% if form.email.errors %}
+                    <ul class="error-list">
+                        {% for error in form.email.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+
+            <!-- PASSWORD -->
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+
+                <div class="password-wrapper">
+                    <input
+                        type="password"
+                        name="password1"
+                        id="id_password1"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('id_password1', this)"
+                    >
+                        Show
+                    </button>
+                </div>
+
+                {% if form.password1.help_text %}
+                    <span class="help-text">
+                        {{ form.password1.help_text|safe }}
+                    </span>
+                {% endif %}
+
+                {% if form.password1.errors %}
+                    <ul class="error-list">
+                        {% for error in form.password1.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+
+                <div class="password-wrapper">
+                    <input
+                        type="password"
+                        name="password2"
+                        id="id_password2"
+                        placeholder="Enter your password again"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('id_password2', this)"
+                    >
+                        Show
+                    </button>
+                </div>
+
+                {% if form.password2.errors %}
+                    <ul class="error-list">
+                        {% for error in form.password2.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+
+            <button type="submit" class="register-btn">
+                Create Account
+            </button>
+
+        </form>
+
+
+        <div class="login-text">
+            Already have an account?
+            <a href="{% url 'login' %}">Login here</a>
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer>
+    &copy; 2026 SAMKY TECH SHOP. All rights reserved.
+</footer>
+
+
+<script>
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+
+        if (input.type === "password") {
+            input.type = "text";
+            button.textContent = "Hide";
+        } else {
+            input.type = "password";
+            button.textContent = "Show";
+        }
+    }
+</script>
+
+</body>
+</html>

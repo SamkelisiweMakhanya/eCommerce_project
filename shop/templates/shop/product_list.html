@@ -1,0 +1,417 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Products | SAMKY TECH SHOP</title>
+
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f5f7fb;
+        color: #111827;
+    }
+
+    /* NAVIGATION */
+
+    nav {
+        background: #111827;
+        padding: 18px 6%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .logo {
+        color: white;
+        text-decoration: none;
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 25px;
+        flex-wrap: wrap;
+    }
+
+    .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .nav-links a:hover {
+        color: #60a5fa;
+    }
+
+    /* PAGE HEADER */
+
+    .page-header {
+        text-align: center;
+        padding: 60px 20px 35px;
+    }
+
+    .page-header h1 {
+        font-size: 42px;
+        margin-bottom: 10px;
+    }
+
+    .page-header p {
+        color: #6b7280;
+        font-size: 17px;
+    }
+
+    /* PRODUCTS */
+
+    .products {
+        width: 90%;
+        max-width: 1200px;
+        margin: 20px auto 80px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+        transition: 0.3s ease;
+        overflow: hidden;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* PRODUCT IMAGE */
+
+    .product-image {
+        width: 100%;
+        height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        background: #f9fafb;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
+
+    .no-image {
+        color: #9ca3af;
+        font-size: 15px;
+    }
+
+    /* PRODUCT DETAILS */
+
+    .product-card h2 {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    .description {
+        color: #6b7280;
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+
+    .price {
+        color: #2563eb;
+        font-size: 21px;
+        font-weight: 800;
+        margin-bottom: 18px;
+    }
+
+    .btn {
+        display: inline-block;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        padding: 11px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        transition: 0.3s ease;
+    }
+
+    .btn:hover {
+        background: #1d4ed8;
+    }
+
+    /* EMPTY */
+
+    .empty-products {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 14px;
+    }
+
+    .empty-products h2 {
+        margin-bottom: 10px;
+    }
+
+    .empty-products p {
+        color: #6b7280;
+    }
+
+    /* FOOTER */
+
+    footer {
+        background: #111827;
+        color: white;
+        text-align: center;
+        padding: 35px;
+    }
+
+    footer p {
+        color: #9ca3af;
+        font-size: 14px;
+    }
+
+    /* TABLET */
+
+    @media (max-width: 900px) {
+
+        .products {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 600px) {
+
+        nav {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .nav-links {
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+        }
+
+        .products {
+            width: 92%;
+            grid-template-columns: 1fr;
+        }
+
+        .product-image {
+            height: 300px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<nav>
+
+    <a
+        href="{% url 'home' %}"
+        class="logo"
+    >
+        SAMKY TECH SHOP
+    </a>
+
+    <div class="nav-links">
+
+        <a href="{% url 'home' %}">
+            Home
+        </a>
+
+        <a href="{% url 'product_list' %}">
+            Products
+        </a>
+
+        <a href="{% url 'cart' %}">
+            Cart
+        </a>
+
+        {% if user.is_authenticated %}
+
+            <a href="{% url 'my_orders' %}">
+                My Orders
+            </a>
+
+            <a href="{% url 'buyer_dashboard' %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'logout' %}">
+                Logout
+            </a>
+
+        {% else %}
+
+            <a href="{% url 'login' %}">
+                Login
+            </a>
+
+            <a href="{% url 'register' %}">
+                Register
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</nav>
+
+
+<!-- PAGE HEADER -->
+
+<section class="page-header">
+
+    <h1>
+        Our Products
+    </h1>
+
+    <p>
+        Browse our latest smartphones,
+        electronics and technology products.
+    </p>
+
+</section>
+
+
+<!-- PRODUCTS -->
+
+<section class="products">
+
+    {% for product in products %}
+
+        <div class="product-card">
+
+            <!-- PRODUCT IMAGE -->
+
+            <div class="product-image">
+
+                {% if product.image %}
+
+                    <img
+                        src="{{ product.image.url }}"
+                        alt="{{ product.name }}"
+                    >
+
+                {% else %}
+
+                    <p class="no-image">
+                        No image available
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- PRODUCT NAME -->
+
+            <h2>
+                {{ product.name }}
+            </h2>
+
+
+            <!-- DESCRIPTION -->
+
+            {% if product.description %}
+
+                <p class="description">
+                    {{ product.description }}
+                </p>
+
+            {% endif %}
+
+
+            <!-- PRICE -->
+
+            <p class="price">
+                R{{ product.price }}
+            </p>
+
+
+            <!-- VIEW PRODUCT -->
+
+            <a
+                href="{% url 'product_detail' product.id %}"
+                class="btn"
+            >
+                View Product
+            </a>
+
+        </div>
+
+
+    {% empty %}
+
+        <div class="empty-products">
+
+            <h2>
+                No Products Available
+            </h2>
+
+            <p>
+                There are currently no products
+                available in the store.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <p>
+        &copy; 2026 SAMKY TECH SHOP.
+        All rights reserved.
+    </p>
+
+</footer>
+
+</body>
+
+</html>
+
