@@ -60,3 +60,24 @@
 
 7\. The application should maintain user sessions.
 
+
+
+**API design**
+
+
+
+
+
+|**Method**|**Endpoin**t|**Purpose**|**Who**|
+|-|-|-|-|
+|POST|/api/stores/|Create a store|Vendor|
+|GET|/api/vendors/<id>/stores/|Get vendor's stores|Buyer/Vendor|
+|POST|/api/stores/<id>/products/|Add product to store|Store owner|
+|GET|/api/stores/<id>/products/|Get store products|Buyer/Vendor|
+|GET|/api/stores/<id>/reviews/| Get store reviews|Buyer/Vendor|
+|GET|/api/products/<id>/|Get product details| Buyer/Vendor|
+
+
+
+
+

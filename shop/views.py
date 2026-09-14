@@ -1,4 +1,6 @@
-from decimal import Decimal, InvalidOperation
+import json
+from decimal import Decimal
+from urllib.request import Request, urlopen
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -6,8 +8,32 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
+from drf_spectacular.utils import extend_schema
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Order, OrderItem, Product, Profile, Review, Store
+from .serializers import RegisterSerializer
+
+
+def get_reddit_posts(subreddit):
+    """Return Reddit posts without depending on a missing local module."""
+    request = Request(
+        f"https://www.reddit.com/r/{subreddit}/new.json?limit=10",
+        headers={"User-Agent": "ecommerce-project/1.0"},
+    )
+
+    try:
+        with urlopen(request, timeout=5) as response:
+            data = json.load(response)
+    except (OSError, ValueError, json.JSONDecodeError):
+        return []
+
+    return [
+        item.get("data", {})
+        for item in data.get("data", {}).get("children", [])
+    ]
 
 # ============================================================
 # HOME / PRODUCTS
@@ -672,3 +698,46 @@ def order_detail(request, order_id):
             "order": order,
         },
     )
+
+
+def reddit_feed(request):
+    # Call our helper function to fetch posts
+    posts = get_reddit_posts("python")
+    # Pass the posts into the template
+    return render(request, "reddit_feed.html", {"posts": posts})
+
+
+@extend_schema(
+    auth=[],
+    request=RegisterSerializer,
+    responses={
+        201: {
+            "type": "object",
+            "properties": {
+                "message": {"type": "string"},
+                "username": {"type": "string"},
+                "email": {"type": "string"},
+            },
+        },
+    },
+)
+class RegisterAPIView(APIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+
+            return Response(
+                {
+                    "message": "User registered successfully.",
+                    "username": user.username,
+                    "email": user.email,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )

@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "shop"
+    "rest_framework",
+    "rest_framework.authtoken",
+    "drf_spectacular",
+    "shop",
 ]
 
 MIDDLEWARE = [
@@ -156,3 +159,16 @@ LOGOUT_REDIRECT_URL = "/"
 AUTH_USER_MODEL = 'auth.User'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "E-Commerce API",
+    "DESCRIPTION": "API documentation for the e-commerce project.",
+    "VERSION": "1.0.0",
+}

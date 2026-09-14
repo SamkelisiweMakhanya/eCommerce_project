@@ -1,6 +1,7 @@
 from typing import ClassVar
 
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 from django.db import models
 
 ROLE_CHOICES = [
@@ -49,7 +50,13 @@ class Product(models.Model):
     )
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
+
+    stock = models.PositiveIntegerField(default=0)
 
     image = models.ImageField(
         upload_to="products/",
@@ -65,6 +72,7 @@ class Order(models.Model):
     STATUS_CHOICES: ClassVar[list[tuple[str, str]]] = [
         ("PENDING", "Pending"),
         ("PAID", "Paid"),
+        ("COMPLETED", "Completed"),
         ("CANCELLED", "Cancelled"),
     ]
 
