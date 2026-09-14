@@ -198,4 +198,6 @@ urlpatterns = [
         name="pay-order-api",
     ),
 
+    path("reddit/", views.reddit_feed, name="reddit-feed"),
+
 ]

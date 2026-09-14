@@ -1,6 +1,4 @@
-import json
 from decimal import Decimal
-from urllib.request import Request, urlopen
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -13,27 +11,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from functions.reddit import get_reddit_posts
+
 from .models import Order, OrderItem, Product, Profile, Review, Store
 from .serializers import RegisterSerializer
-
-
-def get_reddit_posts(subreddit):
-    """Return Reddit posts without depending on a missing local module."""
-    request = Request(
-        f"https://www.reddit.com/r/{subreddit}/new.json?limit=10",
-        headers={"User-Agent": "ecommerce-project/1.0"},
-    )
-
-    try:
-        with urlopen(request, timeout=5) as response:
-            data = json.load(response)
-    except (OSError, ValueError, json.JSONDecodeError):
-        return []
-
-    return [
-        item.get("data", {})
-        for item in data.get("data", {}).get("children", [])
-    ]
 
 # ============================================================
 # HOME / PRODUCTS
@@ -701,10 +682,20 @@ def order_detail(request, order_id):
 
 
 def reddit_feed(request):
-    # Call our helper function to fetch posts
-    posts = get_reddit_posts("python")
-    # Pass the posts into the template
-    return render(request, "reddit_feed.html", {"posts": posts})
+    posts = get_reddit_posts("django")
+
+    if posts is None:
+        return render(
+            request,
+            "shop/reddit_feed.html",
+            {"posts": [], "error": "Unable to fetch Reddit posts."},
+        )
+
+    return render(
+        request,
+        "shop/reddit_feed.html",
+        {"posts": posts, "error": None},
+    )
 
 
 @extend_schema(

@@ -1,11 +1,13 @@
+import xml.etree.ElementTree as ET
+
 import requests
 
 
 def get_reddit_posts(subreddit):
-    url = f"https://www.reddit.com/r/{subreddit}.json?limit=5"
+    url = f"https://www.reddit.com/r/{subreddit}/.rss"
 
     headers = {
-        "User-Agent": "ecommerce-project/1.0 by ecommerce-project"
+        "User-Agent": "ecommerce-project/1.0"
     }
 
     try:
@@ -15,10 +17,34 @@ def get_reddit_posts(subreddit):
             timeout=30,
         )
         response.raise_for_status()
-        return response.json()
 
-    except requests.RequestException as exc:
-        return {
-            "error": "Unable to fetch Reddit posts.",
-            "details": str(exc),
-        }
+        root = ET.fromstring(response.text)
+
+        posts = []
+
+        for entry in root.findall(
+            "{http://www.w3.org/2005/Atom}entry"
+        )[:5]:
+            title = entry.find(
+                "{http://www.w3.org/2005/Atom}title"
+            )
+            author = entry.find(
+                "{http://www.w3.org/2005/Atom}author/"
+                "{http://www.w3.org/2005/Atom}name"
+            )
+            link = entry.find(
+                "{http://www.w3.org/2005/Atom}link"
+            )
+
+            posts.append({
+                "title": title.text if title is not None else "",
+                "author": author.text if author is not None else "",
+                "url": link.attrib["href"] if link is not None else "",
+            })
+
+        if not posts:
+            return None
+        return posts
+
+    except (requests.RequestException, ET.ParseError):
+        return None
