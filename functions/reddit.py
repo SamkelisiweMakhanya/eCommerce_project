@@ -1,9 +1,21 @@
-import xml.etree.ElementTree as ET
+"""Utilities for retrieving posts from Reddit RSS feeds."""
 
-import requests
+import xml.etree.ElementTree as ET
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 
 def get_reddit_posts(subreddit):
+    """Retrieve the five most recent posts from a Reddit subreddit.
+
+    Args:
+        subreddit: The name of the Reddit subreddit to retrieve posts from.
+
+    Returns:
+        A list of dictionaries containing each post's title, author,
+        and URL, or None if the request fails, the RSS feed cannot be
+        parsed, or no posts are found.
+    """
     url = f"https://www.reddit.com/r/{subreddit}/.rss"
 
     headers = {
@@ -11,14 +23,9 @@ def get_reddit_posts(subreddit):
     }
 
     try:
-        response = requests.get(
-            url,
-            headers=headers,
-            timeout=30,
-        )
-        response.raise_for_status()
-
-        root = ET.fromstring(response.text)
+        request = Request(url, headers=headers)
+        with urlopen(request, timeout=30) as response:
+            root = ET.fromstring(response.read())
 
         posts = []
 
@@ -46,5 +53,5 @@ def get_reddit_posts(subreddit):
             return None
         return posts
 
-    except (requests.RequestException, ET.ParseError):
+    except (HTTPError, URLError, TimeoutError, ET.ParseError):
         return None

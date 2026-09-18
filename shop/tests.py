@@ -1,3 +1,7 @@
+"""Tests for the Shop application."""
+
 from django.test import TestCase
 
-# Create your tests here.
+
+class ShopTestCase(TestCase):
+    """Test cases for the Shop application."""

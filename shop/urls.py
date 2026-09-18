@@ -1,3 +1,9 @@
+"""URL configuration for the eCommerce application.
+
+This module maps browser and API URL patterns to their corresponding
+Django views and REST API class-based views.
+"""
+
 from django.urls import path
 
 from . import views
@@ -18,7 +24,14 @@ from .api_views import (
     VendorStoresView,
 )
 
+# ============================================================
+
+# URL PATTERNS
+
+# ============================================================
+
 urlpatterns = [
+    # Home and product pages.
     path("", views.home, name="home"),
 
     path("products/", views.product_list, name="product_list"),
@@ -35,6 +48,7 @@ urlpatterns = [
         name="submit_review",
     ),
 
+    # Authentication and user account pages.
     path("login/", views.user_login, name="login"),
 
     path("register/", views.register, name="register"),
@@ -57,12 +71,14 @@ urlpatterns = [
         name="logout",
     ),
 
+    # Vendor product management.
     path(
         "store/<int:store_id>/product/create/",
         views.product_create,
         name="product_create",
     ),
 
+    # Shopping cart.
     path(
         "cart/",
         views.cart,
@@ -81,6 +97,7 @@ urlpatterns = [
         name="cart_remove",
     ),
 
+    # Checkout and order pages.
     path(
         "checkout/",
         views.checkout,
@@ -105,33 +122,35 @@ urlpatterns = [
         name="order_detail",
     ),
 
+    # Reddit feed.
     path("reddit/", views.reddit_feed, name="reddit_feed"),
 
+    # Store and vendor API endpoints.
     path(
-        'api/stores/',
+        "api/stores/",
         StoreCreateView.as_view(),
-        name='store-create'
+        name="store-create",
     ),
 
     path(
-        'api/stores/<int:store_id>/products/',
+        "api/stores/<int:store_id>/products/",
         ProductCreateView.as_view(),
-        name='store-products'
+        name="store-products",
     ),
 
     path(
-        'api/vendors/<int:vendor_id>/stores/',
+        "api/vendors/<int:vendor_id>/stores/",
         VendorStoresView.as_view(),
-        name='vendor-stores'
+        name="vendor-stores",
     ),
 
     path(
-        'api/stores/<int:store_id>/reviews/',
+        "api/stores/<int:store_id>/reviews/",
         StoreReviewsView.as_view(),
-        name='store-reviews'
+        name="store-reviews",
     ),
 
-
+    # Authentication API endpoints.
     path(
         "api/register/",
         views.RegisterAPIView.as_view(),
@@ -144,34 +163,18 @@ urlpatterns = [
         name="api-login",
     ),
 
+    # Reddit API endpoint.
     path(
         "api/reddit/django/",
         RedditPostsAPIView.as_view(),
         name="reddit-django",
     ),
 
+    # Buyer order API endpoints.
     path(
         "api/orders/",
         MyOrdersAPIView.as_view(),
         name="api-orders",
-    ),
-
-    path(
-        "api/vendor/orders/",
-        VendorOrdersAPIView.as_view(),
-        name="vendor-orders-api",
-    ),
-
-    path(
-        "api/vendor/orders/<int:order_id>/status/",
-        VendorOrderStatusAPIView.as_view(),
-        name="vendor-order-status-api",
-    ),
-
-    path(
-        "api/vendor/orders/<int:order_id>/",
-        VendorOrderDetailAPIView.as_view(),
-        name="vendor-order-detail-api",
     ),
 
     path(
@@ -198,6 +201,32 @@ urlpatterns = [
         name="pay-order-api",
     ),
 
-    path("reddit/", views.reddit_feed, name="reddit-feed"),
+    # Vendor order API endpoints.
+    path(
+        "api/vendor/orders/",
+        VendorOrdersAPIView.as_view(),
+        name="vendor-orders-api",
+    ),
+
+    path(
+        "api/vendor/orders/<int:order_id>/status/",
+        VendorOrderStatusAPIView.as_view(),
+        name="vendor-order-status-api",
+    ),
+
+    path(
+        "api/vendor/orders/<int:order_id>/",
+        VendorOrderDetailAPIView.as_view(),
+        name="vendor-order-detail-api",
+    ),
+
+    # Note:
+    # The original file contained a second Reddit URL with a different
+    # URL name. It is preserved here to avoid changing functionality.
+    path(
+        "reddit/",
+        views.reddit_feed,
+        name="reddit-feed",
+    ),
 
 ]

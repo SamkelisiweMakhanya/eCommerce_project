@@ -1,3 +1,9 @@
+"""Database models for the eCommerce application.
+
+This module defines profiles, stores, products, orders, order items,
+and product reviews used by the application.
+"""
+
 from typing import ClassVar
 
 from django.contrib.auth.models import User
@@ -12,6 +18,12 @@ ROLE_CHOICES = [
 
 
 class Profile(models.Model):
+    """Store additional account information for a user.
+
+A profile associates a user with an application role and can
+optionally link the user to a vendor account.
+    """
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -32,10 +44,9 @@ class Profile(models.Model):
 
 
 class Store(models.Model):
-    vendor = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE
-    )
+    """Represent a store owned and managed by a vendor."""
+
+    vendor = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,6 +54,8 @@ class Store(models.Model):
 
 
 class Product(models.Model):
+    """Represent a product available from a store."""
+
     store = models.ForeignKey(
         Store,
         on_delete=models.CASCADE,
@@ -55,20 +68,25 @@ class Product(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0)],
     )
-
     stock = models.PositiveIntegerField(default=0)
-
     image = models.ImageField(
         upload_to="products/",
         blank=True,
-        null=True
+        null=True,
     )
 
     def __str__(self):
+        """Return the product name as its string representation.
+
+    Returns:
+        The name of the product.
+    """
         return self.name
 
 
 class Order(models.Model):
+    """Represent an order placed by a buyer."""
+
     STATUS_CHOICES: ClassVar[list[tuple[str, str]]] = [
         ("PENDING", "Pending"),
         ("PAID", "Paid"),
@@ -87,24 +105,22 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    """Represent a product included in a customer order."""
+
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name="items"
+        related_name="items",
     )
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.PROTECT
-    )
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 class Review(models.Model):
-    buyer = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
+    """Represent a buyer's review of a product."""
+
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -116,6 +132,8 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        """Define ordering and uniqueness rules for product reviews."""
+
         ordering: ClassVar[list[str]] = ["-created_at"]
         constraints: ClassVar[list[models.UniqueConstraint]] = [
             models.UniqueConstraint(
@@ -125,4 +143,10 @@ class Review(models.Model):
         ]
 
     def __str__(self):
+        """Return a readable representation of the product review.
+
+    Returns:
+        A string containing the product name, buyer username,
+        and review rating.
+    """
         return f"{self.product.name} - {self.buyer.username} ({self.rating}/5)"
