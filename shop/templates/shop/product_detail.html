@@ -1,649 +1,300 @@
-{% load static %}
+{% extends "shop/base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}{{ product.name }} - SAMKY TECH SHOP{% endblock %}
 
-    <title>{{ product.name }} | SAMKY TECH SHOP</title>
+{% block extra_css %}
 
-    <style>
-        * {
-            box-sizing: border-box;
+<style>
+    .product-detail-page {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .product-detail-card {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 45px;
+        align-items: center;
+    }
+
+    .product-detail-image {
+        width: 100%;
+        height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .product-detail-image img {
+        max-width: 85%;
+        max-height: 85%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+    }
+
+    .product-detail-info h1 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 34px;
+        color: #111827;
+    }
+
+    .product-price {
+        font-size: 28px;
+        font-weight: bold;
+        color: #2563eb;
+        margin: 15px 0;
+    }
+
+    .product-description {
+        color: #555;
+        line-height: 1.7;
+        margin: 20px 0;
+    }
+
+    .product-meta {
+        background: #f8f9fa;
+        padding: 18px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .product-meta p {
+        margin: 8px 0;
+    }
+
+    .stock-available {
+        color: #15803d;
+        font-weight: bold;
+    }
+
+    .stock-unavailable {
+        color: #dc2626;
+        font-weight: bold;
+    }
+
+    .quantity-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .quantity-input {
+        width: 100px;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .add-cart-button {
+        display: inline-block;
+        background: #2563eb;
+        color: white;
+        padding: 13px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+    }
+
+    .add-cart-button:hover {
+        background: #1d4ed8;
+    }
+
+    .reviews-section {
+        margin-top: 40px;
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .reviews-section h2 {
+        margin-top: 0;
+        color: #111827;
+    }
+
+    .review {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 18px 0;
+    }
+
+    .review:last-child {
+        border-bottom: none;
+    }
+
+    .review-rating {
+        font-weight: bold;
+        color: #f59e0b;
+    }
+
+    .review-comment {
+        margin-top: 8px;
+        color: #555;
+        line-height: 1.6;
+    }
+
+    .review-form {
+        margin-top: 25px;
+    }
+
+    .review-form textarea,
+    .review-form select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .product-detail-card {
+            grid-template-columns: 1fr;
+            padding: 20px;
         }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #222;
+        .product-detail-image {
+            height: 300px;
         }
 
-        nav {
-            background: #111827;
-            padding: 16px 6%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .brand {
-            color: white;
-            font-size: 22px;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 9px 13px;
-            border-radius: 7px;
-        }
-
-        .nav-links a:hover {
-            background: #374151;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1100px;
-            margin: 40px auto;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-        }
-
-        .product-image {
-            width: 100%;
-            height: 420px;
-            object-fit: cover;
-            border-radius: 14px;
-            background: #f3f4f6;
-        }
-
-        .no-image {
-            width: 100%;
-            height: 420px;
-            border-radius: 14px;
-            background: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 70px;
-        }
-
-        .product-info h1 {
-            margin-top: 0;
-            font-size: 36px;
-        }
-
-        .price {
+        .product-detail-info h1 {
             font-size: 28px;
-            font-weight: bold;
-            margin: 20px 0;
         }
+    }
+</style>
 
-        .description {
-            color: #555;
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
+{% endblock %}
 
-        .store {
-            color: #666;
-            margin-bottom: 20px;
-        }
+{% block content %}
 
-        .stock {
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+<div class="product-detail-page">
 
-        .in-stock {
-            color: #15803d;
-        }
+<div class="product-detail-card">
 
-        .out-stock {
-            color: #dc2626;
-        }
-
-        button,
-        .btn {
-            border: none;
-            padding: 13px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            display: inline-block;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #111827;
-        }
-
-        .cart-form {
-            display: inline;
-        }
-
-        /* Reviews */
-
-        .reviews-section {
-            margin-top: 40px;
-        }
-
-        .reviews-section h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-
-        .rating-summary {
-            background: white;
-            border-radius: 14px;
-            padding: 25px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .average-rating {
-            font-size: 48px;
-            font-weight: bold;
-        }
-
-        .stars {
-            color: #f59e0b;
-            font-size: 25px;
-            letter-spacing: 2px;
-        }
-
-        .review-count {
-            color: #666;
-        }
-
-        .review {
-            background: white;
-            border-radius: 14px;
-            padding: 22px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .reviewer {
-            font-weight: bold;
-        }
-
-        .review-date {
-            color: #888;
-            font-size: 14px;
-        }
-
-        .review-comment {
-            margin-top: 15px;
-            line-height: 1.6;
-            color: #444;
-        }
-
-        .verified {
-            display: inline-block;
-            margin-left: 8px;
-            padding: 4px 8px;
-            border-radius: 20px;
-            background: #dcfce7;
-            color: #166534;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .review-form-container {
-            background: white;
-            border-radius: 14px;
-            padding: 25px;
-            margin-top: 30px;
-        }
-
-        .review-form-container h3 {
-            margin-top: 0;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 15px;
-        }
-
-        textarea.form-control {
-            resize: vertical;
-        }
-
-        .error {
-            color: #dc2626;
-            margin-bottom: 10px;
-        }
-
-        .empty-reviews {
-            background: white;
-            padding: 30px;
-            border-radius: 14px;
-            text-align: center;
-            color: #666;
-        }
-
-        footer {
-            margin-top: 60px;
-            padding: 30px;
-            background: #111827;
-            color: white;
-            text-align: center;
-        }
-
-        @media (max-width: 768px) {
-            .product-card {
-                grid-template-columns: 1fr;
-                padding: 20px;
-            }
-
-            .product-image,
-            .no-image {
-                height: 300px;
-            }
-
-            .product-info h1 {
-                font-size: 28px;
-            }
-
-            .average-rating {
-                font-size: 38px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<nav>
-    <a href="{% url 'home' %}" class="brand">
-        SAMKY TECH SHOP
-    </a>
-
-    <div class="nav-links">
-        <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'product_list' %}">Products</a>
-        <a href="{% url 'cart' %}">Cart</a>
-
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'buyer_dashboard' %}">Dashboard</a>
-            <a href="{% url 'my_orders' %}">My Orders</a>
-            <a href="{% url 'logout' %}">Logout</a>
+    <div class="product-detail-image">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
         {% else %}
-            <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'register' %}">Register</a>
+            <p>No image available</p>
         {% endif %}
     </div>
-</nav>
 
+    <div class="product-detail-info">
 
-<div class="container">
+        <p><strong>SAMKY TECH SHOP</strong></p>
 
-    <!-- PRODUCT -->
-    <div class="product-card">
+        <h1>{{ product.name }}</h1>
 
-        <div>
-            {% if product.image %}
-                <img
-                    src="{% static 'shop/images/iphone.jpg' %}"
-                    alt="{{ product.name }}"
-                    class="product-image"
-                >
-            {% else %}
-                <div class="no-image">
-                    📦
-                </div>
-            {% endif %}
+        <div class="product-price">
+            R{{ product.price }}
         </div>
 
+        <div class="product-description">
+            {{ product.description }}
+        </div>
 
-        <div class="product-info">
-
-            <h1>{{ product.name }}</h1>
-
-            <div class="price">
-                R{{ product.price }}
-            </div>
-
-            <div class="description">
-                {{ product.description }}
-            </div>
-
-            <div class="store">
+        <div class="product-meta">
+            <p>
                 <strong>Store:</strong>
                 {{ product.store.name }}
-            </div>
+            </p>
 
             {% if product.stock > 0 %}
-                <div class="stock in-stock">
+                <p class="stock-available">
                     ✓ {{ product.stock }} available
-                </div>
-
-                {% if request.user.is_authenticated %}
-                    <form
-                        method="post"
-                        action="{% url 'cart_add' product.id %}"
-                        class="cart-form"
-                    >
-                        {% csrf_token %}
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                        >
-                            Add to Cart
-                        </button>
-                    </form>
-                {% else %}
-                    <a
-                        href="{% url 'login' %}?next={{ request.path }}"
-                        class="btn btn-primary"
-                    >
-                        Login to Buy
-                    </a>
-                {% endif %}
-
+                </p>
             {% else %}
-
-                <div class="stock out-stock">
-                    ✕ Out of stock
-                </div>
-
+                <p class="stock-unavailable">
+                    Out of Stock
+                </p>
             {% endif %}
-
         </div>
+
+        {% if product.stock > 0 %}
+            <form method="post" action="{% url 'cart_add' product.id %}">
+                {% csrf_token %}
+
+                <label class="quantity-label" for="quantity">
+                    Quantity
+                </label>
+
+                <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    value="1"
+                    min="1"
+                    max="{{ product.stock }}"
+                    class="quantity-input"
+                >
+
+                <br>
+
+                <button type="submit" class="add-cart-button">
+                    Add to Cart
+                </button>
+            </form>
+        {% endif %}
 
     </div>
 
+</div>
 
-    <!-- REVIEWS -->
+<div class="reviews-section">
 
-    <section class="reviews-section">
+    <h2>Customer Reviews</h2>
 
-        <h2>Customer Reviews</h2>
+    {% if reviews %}
+        {% for review in reviews %}
+            <div class="review">
 
+                <strong>{{ review.user.username }}</strong>
 
-        <!-- RATING SUMMARY -->
-
-        <div class="rating-summary">
-
-            <div class="average-rating">
-                {{ average_rating|floatformat:1 }}/5
-            </div>
-
-            <div>
-                <div class="stars">
-                    {% if average_rating >= 1 %}★{% else %}☆{% endif %}
-                    {% if average_rating >= 2 %}★{% else %}☆{% endif %}
-                    {% if average_rating >= 3 %}★{% else %}☆{% endif %}
-                    {% if average_rating >= 4 %}★{% else %}☆{% endif %}
-                    {% if average_rating >= 5 %}★{% else %}☆{% endif %}
+                <div class="review-rating">
+                    ★ {{ review.rating }}/5
                 </div>
 
-                <div class="review-count">
-                    Based on {{ review_count }} review{{ review_count|pluralize }}
+                <div class="review-comment">
+                    {{ review.comment }}
                 </div>
-            </div>
-
-        </div>
-
-
-        <!-- REVIEW LIST -->
-
-        {% if reviews %}
-
-            {% for review in reviews %}
-
-                <div class="review">
-
-                    <div class="review-header">
-
-                        <div>
-                            <span class="reviewer">
-                                {{ review.buyer.username }}
-                            </span>
-
-                            {% if review.verified %}
-                                <span class="verified">
-                                    ✓ Verified Purchase
-                                </span>
-                            {% endif %}
-                        </div>
-
-                        <div class="review-date">
-                            {{ review.created_at|date:"d M Y" }}
-                        </div>
-
-                    </div>
-
-
-                    <div class="stars">
-
-                        {% if review.rating >= 1 %}★{% else %}☆{% endif %}
-                        {% if review.rating >= 2 %}★{% else %}☆{% endif %}
-                        {% if review.rating >= 3 %}★{% else %}☆{% endif %}
-                        {% if review.rating >= 4 %}★{% else %}☆{% endif %}
-                        {% if review.rating >= 5 %}★{% else %}☆{% endif %}
-
-                    </div>
-
-
-                    <div class="review-comment">
-                        {{ review.comment }}
-                    </div>
-
-                </div>
-
-            {% endfor %}
-
-        {% else %}
-
-            <div class="empty-reviews">
-                <h3>No reviews yet</h3>
-                <p>Be the first customer to review this product.</p>
-            </div>
-
-        {% endif %}
-
-
-        <!-- REVIEW FORM -->
-
-        {% if request.user.is_authenticated %}
-
-            {% if user_review %}
-
-                <div class="review-form-container">
-
-                    <h3>You've already reviewed this product</h3>
-
-                    <div class="stars">
-                        {% if user_review.rating >= 1 %}★{% else %}☆{% endif %}
-                        {% if user_review.rating >= 2 %}★{% else %}☆{% endif %}
-                        {% if user_review.rating >= 3 %}★{% else %}☆{% endif %}
-                        {% if user_review.rating >= 4 %}★{% else %}☆{% endif %}
-                        {% if user_review.rating >= 5 %}★{% else %}☆{% endif %}
-                    </div>
-
-                    <p>
-                        {{ user_review.comment }}
-                    </p>
-
-                </div>
-
-            {% else %}
-
-                <div class="review-form-container">
-
-                    <h3>Write a Review</h3>
-
-                    <p>
-                        Share your experience with this product.
-                    </p>
-
-                    <form
-                        method="post"
-                        action="{% url 'submit_review' product.id %}"
-                    >
-
-                        {% csrf_token %}
-
-                        <div class="form-group">
-
-                            <label for="id_rating">
-                                Rating
-                            </label>
-
-                            <select
-                                name="rating"
-                                id="id_rating"
-                                class="form-control"
-                                required
-                            >
-                                <option value="">
-                                    Select a rating
-                                </option>
-
-                                <option value="5">
-                                    ★★★★★ - Excellent
-                                </option>
-
-                                <option value="4">
-                                    ★★★★☆ - Very Good
-                                </option>
-
-                                <option value="3">
-                                    ★★★☆☆ - Good
-                                </option>
-
-                                <option value="2">
-                                    ★★☆☆☆ - Fair
-                                </option>
-
-                                <option value="1">
-                                    ★☆☆☆☆ - Poor
-                                </option>
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="id_comment">
-                                Your Review
-                            </label>
-
-                            <textarea
-                                name="comment"
-                                id="id_comment"
-                                class="form-control"
-                                rows="5"
-                                placeholder="Write your review..."
-                                required
-                            ></textarea>
-
-                        </div>
-
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                        >
-                            Submit Review
-                        </button>
-
-                    </form>
-
-                </div>
-
-            {% endif %}
-
-        {% else %}
-
-            <div class="review-form-container">
-
-                <h3>Want to leave a review?</h3>
-
-                <p>
-                    Please log in to share your experience.
-                </p>
-
-                <a
-                    href="{% url 'login' %}?next={{ request.path }}"
-                    class="btn btn-primary"
-                >
-                    Login to Review
-                </a>
 
             </div>
+        {% empty %}
+            <p>No reviews yet.</p>
+        {% endfor %}
+    {% else %}
+        <p>No reviews yet.</p>
+    {% endif %}
 
-        {% endif %}
+    {% if user.is_authenticated %}
+        <form method="post" class="review-form">
+            {% csrf_token %}
 
-    </section>
+            {{ review_form.as_p }}
+
+            <button type="submit" class="add-cart-button">
+                Submit Review
+            </button>
+        </form>
+    {% endif %}
 
 </div>
 
 
-<footer>
-    <p>
-        &copy; 2026 SAMKY TECH SHOP. All rights reserved.
-    </p>
-</footer>
+</div>
 
-</body>
-</html>
+{% endblock %}

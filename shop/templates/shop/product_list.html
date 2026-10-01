@@ -1,417 +1,413 @@
-{% load static %}
+{% extends "shop/base.html" %}
 
-<!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Products | SAMKY TECH SHOP</title>
+{% block content %}
 
 <style>
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+    .products-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px 60px;
     }
 
-    body {
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f5f7fb;
-        color: #111827;
+    .products-header {
+        text-align: center;
+        margin-bottom: 35px;
     }
 
-    /* NAVIGATION */
+    .products-header h1 {
+        margin-bottom: 10px;
+        font-size: 38px;
+    }
 
-    nav {
-        background: #111827;
-        padding: 18px 6%;
+    .products-header p {
+        color: #666;
+        font-size: 16px;
+    }
+
+    .product-tools {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
+        margin-bottom: 35px;
     }
 
-    .logo {
-        color: white;
-        text-decoration: none;
-        font-size: 24px;
-        font-weight: 800;
-    }
-
-    .nav-links {
+    .search-form {
         display: flex;
-        gap: 25px;
+        gap: 10px;
         flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
     }
 
-    .nav-links a {
-        color: white;
+    .search-input,
+    .sort-select {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+        background: white;
+    }
+
+    .search-input {
+        width: 280px;
+    }
+
+    .sort-select {
+        min-width: 190px;
+    }
+
+    .search-button,
+    .clear-button {
+        padding: 12px 20px;
+        border-radius: 8px;
         text-decoration: none;
+        border: none;
+        cursor: pointer;
         font-weight: 600;
     }
 
-    .nav-links a:hover {
-        color: #60a5fa;
+    .search-button {
+        background: #111827;
+        color: white;
     }
 
-    /* PAGE HEADER */
-
-    .page-header {
-        text-align: center;
-        padding: 60px 20px 35px;
+    .search-button:hover {
+        background: #000;
     }
 
-    .page-header h1 {
-        font-size: 42px;
-        margin-bottom: 10px;
+    .clear-button {
+        background: #eeeeee;
+        color: #333;
     }
 
-    .page-header p {
-        color: #6b7280;
-        font-size: 17px;
+    .products-count {
+        margin-bottom: 20px;
+        color: #666;
+        font-size: 14px;
     }
 
-    /* PRODUCTS */
-
-    .products {
-        width: 90%;
-        max-width: 1200px;
-        margin: 20px auto 80px;
+    .products-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 25px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
     }
 
     .product-card {
         background: white;
+        border: 1px solid #e5e5e5;
         border-radius: 14px;
-        padding: 20px;
-        text-align: center;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-        transition: 0.3s ease;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .product-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     }
 
-    /* PRODUCT IMAGE */
-
     .product-image {
-        width: 100%;
-        height: 280px;
+        height: 230px;
+        background: #f7f7f7;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 20px;
-        background: #f9fafb;
-        border-radius: 10px;
         overflow: hidden;
+        text-decoration: none;
     }
 
     .product-image img {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        display: block;
+        padding: 15px;
+        box-sizing: border-box;
     }
 
     .no-image {
-        color: #9ca3af;
-        font-size: 15px;
-    }
-
-    /* PRODUCT DETAILS */
-
-    .product-card h2 {
-        font-size: 22px;
-        margin-bottom: 10px;
-    }
-
-    .description {
-        color: #6b7280;
-        font-size: 15px;
-        margin-bottom: 15px;
-    }
-
-    .price {
-        color: #2563eb;
-        font-size: 21px;
-        font-weight: 800;
-        margin-bottom: 18px;
-    }
-
-    .btn {
-        display: inline-block;
-        background: #2563eb;
-        color: white;
-        text-decoration: none;
-        padding: 11px 20px;
-        border-radius: 8px;
-        font-weight: 700;
-        transition: 0.3s ease;
-    }
-
-    .btn:hover {
-        background: #1d4ed8;
-    }
-
-    /* EMPTY */
-
-    .empty-products {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 60px 20px;
-        background: white;
-        border-radius: 14px;
-    }
-
-    .empty-products h2 {
-        margin-bottom: 10px;
-    }
-
-    .empty-products p {
-        color: #6b7280;
-    }
-
-    /* FOOTER */
-
-    footer {
-        background: #111827;
-        color: white;
-        text-align: center;
-        padding: 35px;
-    }
-
-    footer p {
-        color: #9ca3af;
+        color: #999;
         font-size: 14px;
     }
 
-    /* TABLET */
+    .product-info {
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
 
-    @media (max-width: 900px) {
+    .product-info h2 {
+        font-size: 19px;
+        margin: 0 0 8px;
+        color: #111827;
+    }
 
-        .products {
+    .product-description {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+        min-height: 42px;
+        margin-bottom: 12px;
+    }
+
+    .product-price {
+        font-size: 21px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 10px;
+    }
+
+    .stock-badge {
+        display: inline-block;
+        width: fit-content;
+        padding: 6px 10px;
+        border-radius: 20px;
+        background: #e8f7ee;
+        color: #16803c;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .out-of-stock {
+        background: #fdecec;
+        color: #c62828;
+    }
+
+    .view-product {
+        display: block;
+        text-align: center;
+        background: #111827;
+        color: white;
+        padding: 11px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: auto;
+    }
+
+    .view-product:hover {
+        background: #000;
+    }
+
+    .no-products {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+    }
+
+    .no-products h2 {
+        color: #222;
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 1000px) {
+        .products-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 750px) {
+        .products-grid {
             grid-template-columns: repeat(2, 1fr);
         }
 
+        .products-header h1 {
+            font-size: 30px;
+        }
+
+        .search-input {
+            width: 100%;
+        }
     }
 
-    /* MOBILE */
-
-    @media (max-width: 600px) {
-
-        nav {
-            justify-content: center;
-            text-align: center;
+    @media (max-width: 500px) {
+        .products-page {
+            padding: 25px 12px 40px;
         }
 
-        .nav-links {
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .page-header h1 {
-            font-size: 32px;
-        }
-
-        .products {
-            width: 92%;
+        .products-grid {
             grid-template-columns: 1fr;
         }
 
         .product-image {
-            height: 300px;
+            height: 260px;
         }
 
-    }
+        .search-form {
+            width: 100%;
+        }
 
+        .search-input,
+        .sort-select,
+        .search-button,
+        .clear-button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
 </style>
 
-</head>
+<div class="products-page">
 
-<body>
+<div class="products-header">
+    <h1>Our Products</h1>
+    <p>Explore quality technology products from SAMKY TECH SHOP.</p>
+</div>
 
-<!-- NAVIGATION -->
+<div class="product-tools">
 
-<nav>
+    <form method="GET" action="{% url 'product_list' %}" class="search-form">
 
-    <a
-        href="{% url 'home' %}"
-        class="logo"
-    >
-        SAMKY TECH SHOP
-    </a>
+        <input
+            type="search"
+            name="q"
+            value="{{ search_query }}"
+            placeholder="Search products..."
+            class="search-input"
+            aria-label="Search products"
+        >
 
-    <div class="nav-links">
+        <select name="sort" class="sort-select">
 
-        <a href="{% url 'home' %}">
-            Home
-        </a>
+            <option value="">Sort by</option>
 
-        <a href="{% url 'product_list' %}">
-            Products
-        </a>
+            <option value="price_low" {% if sort == "price_low" %}selected{% endif %}>
+                Price: Low to High
+            </option>
 
-        <a href="{% url 'cart' %}">
-            Cart
-        </a>
+            <option value="price_high" {% if sort == "price_high" %}selected{% endif %}>
+                Price: High to Low
+            </option>
 
-        {% if user.is_authenticated %}
+            <option value="name_az" {% if sort == "name_az" %}selected{% endif %}>
+                Name: A to Z
+            </option>
 
-            <a href="{% url 'my_orders' %}">
-                My Orders
+            <option value="name_za" {% if sort == "name_za" %}selected{% endif %}>
+                Name: Z to A
+            </option>
+
+        </select>
+
+        <button type="submit" class="search-button">
+            Search
+        </button>
+
+        {% if search_query or sort %}
+            <a href="{% url 'product_list' %}" class="clear-button">
+                Clear
             </a>
-
-            <a href="{% url 'buyer_dashboard' %}">
-                Dashboard
-            </a>
-
-            <a href="{% url 'logout' %}">
-                Logout
-            </a>
-
-        {% else %}
-
-            <a href="{% url 'login' %}">
-                Login
-            </a>
-
-            <a href="{% url 'register' %}">
-                Register
-            </a>
-
         {% endif %}
 
-    </div>
+    </form>
 
-</nav>
+</div>
 
+<div class="products-count">
 
-<!-- PAGE HEADER -->
+    {% if search_query %}
 
-<section class="page-header">
+        Search results for "<strong>{{ search_query }}</strong>"
 
-    <h1>
-        Our Products
-    </h1>
+    {% else %}
 
-    <p>
-        Browse our latest smartphones,
-        electronics and technology products.
-    </p>
+        Showing {{ products|length }} products
 
-</section>
+    {% endif %}
 
+</div>
 
-<!-- PRODUCTS -->
+{% if products %}
 
-<section class="products">
+    <div class="products-grid">
 
-    {% for product in products %}
+        {% for product in products %}
 
-        <div class="product-card">
+            <div class="product-card">
 
-            <!-- PRODUCT IMAGE -->
+                <a
+                    href="{% url 'product_detail' product.id %}"
+                    class="product-image"
+                >
 
-            <div class="product-image">
+                    {% if product.image %}
 
-                {% if product.image %}
+                        <img
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                        >
 
-                    <img
-                        src="{{ product.image.jpg.url }}"
-                        alt="{{ product.name }}"
+                    {% else %}
+
+                        <span class="no-image">
+                            No image available
+                        </span>
+
+                    {% endif %}
+
+                </a>
+
+                <div class="product-info">
+
+                    <h2>
+                        {{ product.name }}
+                    </h2>
+
+                    <div class="product-description">
+                        {{ product.description|truncatechars:80 }}
+                    </div>
+
+                    <div class="product-price">
+                        R{{ product.price }}
+                    </div>
+
+                    {% if product.stock > 0 %}
+
+                        <span class="stock-badge">
+                            ✓ In Stock
+                        </span>
+
+                    {% else %}
+
+                        <span class="stock-badge out-of-stock">
+                            Out of Stock
+                        </span>
+
+                    {% endif %}
+
+                    <a
+                        href="{% url 'product_detail' product.id %}"
+                        class="view-product"
                     >
+                        View Product
+                    </a>
 
-                {% else %}
-
-                    <p class="no-image">
-                        No image available
-                    </p>
-
-                {% endif %}
+                </div>
 
             </div>
 
+        {% endfor %}
 
-            <!-- PRODUCT NAME -->
+    </div>
 
-            <h2>
-                {{ product.name }}
-            </h2>
+{% else %}
 
+    <div class="no-products">
 
-            <!-- DESCRIPTION -->
+        <h2>
+            No products found
+        </h2>
 
-            {% if product.description %}
+        <p>
+            Try another search term or clear your filters.
+        </p>
 
-                <p class="description">
-                    {{ product.description }}
-                </p>
+    </div>
 
-            {% endif %}
+{% endif %}
 
+</div>
 
-            <!-- PRICE -->
-
-            <p class="price">
-                R{{ product.price }}
-            </p>
-
-
-            <!-- VIEW PRODUCT -->
-
-            <a
-                href="{% url 'product_detail' product.id %}"
-                class="btn"
-            >
-                View Product
-            </a>
-
-        </div>
-
-
-    {% empty %}
-
-        <div class="empty-products">
-
-            <h2>
-                No Products Available
-            </h2>
-
-            <p>
-                There are currently no products
-                available in the store.
-            </p>
-
-        </div>
-
-    {% endfor %}
-
-</section>
-
-
-<!-- FOOTER -->
-
-<footer>
-
-    <p>
-        &copy; 2026 SAMKY TECH SHOP.
-        All rights reserved.
-    </p>
-
-</footer>
-
-</body>
-
-</html>
-
+{% endblock %}

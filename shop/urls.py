@@ -97,6 +97,12 @@ urlpatterns = [
         name="cart_remove",
     ),
 
+    path(
+        "cart/update/<int:product_id>/",
+        views.update_cart,
+        name="update_cart",
+    ),
+
     # Checkout and order pages.
     path(
         "checkout/",

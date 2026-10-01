@@ -10,13 +10,15 @@ from typing import ClassVar
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.db.models import Avg  # noqa: F401
 from drf_spectacular.utils import OpenApiResponse, extend_schema
-from functions.reddit import get_reddit_posts
 from rest_framework import generics, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from functions.reddit import get_reddit_posts
 
 from .models import Order, OrderItem, Product, Review, Store
 from .serializers import (

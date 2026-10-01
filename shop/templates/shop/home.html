@@ -1,992 +1,153 @@
 {% load static %}
 
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Home | SAMKY TECH SHOP</title>
+    <title>Home | SAMKY TECH SHOP</title>
 
-<style>
-
-    /* ==========================================
-       RESET
-       ========================================== */
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-
-    /* ==========================================
-       BODY
-       ========================================== */
-
-    body {
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f5f7fb;
-        color: #111827;
-        line-height: 1.6;
-    }
-
-
-    /* ==========================================
-       NAVIGATION
-       ========================================== */
-
-    nav {
-        width: 100%;
-        background: #111827;
-        padding: 18px 6%;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-
-
-    .logo {
-        color: #ffffff;
-        font-size: 24px;
-        font-weight: 800;
-
-        text-decoration: none;
-        letter-spacing: 1px;
-    }
-
-
-    .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        flex-wrap: wrap;
-    }
-
-
-    .nav-links a {
-        color: #ffffff;
-        text-decoration: none;
-
-        font-size: 15px;
-        font-weight: 600;
-
-        transition: 0.3s ease;
-    }
-
-
-    .nav-links a:hover {
-        color: #60a5fa;
-    }
-
-
-    /* ==========================================
-       HERO
-       ========================================== */
-
-    .hero {
-        min-height: 560px;
-
-        padding: 80px 6%;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        gap: 50px;
-
-        background:
-            linear-gradient(
-                135deg,
-                #111827 0%,
-                #1e3a8a 100%
-            );
-
-        color: #ffffff;
-    }
-
-
-    .hero-content {
-        max-width: 650px;
-    }
-
-
-    .small-title {
-        color: #93c5fd;
-
-        font-size: 14px;
-        font-weight: 800;
-
-        letter-spacing: 2px;
-
-        margin-bottom: 15px;
-    }
-
-
-    .hero h1 {
-        font-size: 56px;
-        line-height: 1.1;
-
-        margin-bottom: 20px;
-    }
-
-
-    .hero h1 span {
-        color: #60a5fa;
-    }
-
-
-    .hero-description {
-        color: #dbeafe;
-
-        font-size: 18px;
-
-        max-width: 600px;
-
-        margin-bottom: 30px;
-    }
-
-
-    /* ==========================================
-       BUTTONS
-       ========================================== */
-
-    .hero-buttons {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-
-    .primary-btn {
-        display: inline-block;
-
-        padding: 13px 25px;
-
-        background: #2563eb;
-        color: #ffffff;
-
-        text-decoration: none;
-
-        border-radius: 8px;
-
-        font-weight: 700;
-
-        transition: 0.3s ease;
-    }
-
-
-    .primary-btn:hover {
-        background: #1d4ed8;
-        transform: translateY(-2px);
-    }
-
-
-    .secondary-btn {
-        display: inline-block;
-
-        padding: 13px 25px;
-
-        background: #ffffff;
-        color: #111827;
-
-        text-decoration: none;
-
-        border-radius: 8px;
-
-        font-weight: 700;
-
-        transition: 0.3s ease;
-    }
-
-
-    .secondary-btn:hover {
-        background: #e5e7eb;
-        transform: translateY(-2px);
-    }
-
-
-    /* ==========================================
-       HERO IMAGE
-       ========================================== */
-
-    .hero-image {
-        width: 420px;
-        height: 420px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        flex-shrink: 0;
-    }
-
-
-    .hero-image img {
-        width: 100%;
-        height: 100%;
-
-        object-fit: contain;
-
-        display: block;
-    }
-
-
-    /* ==========================================
-       WELCOME SECTION
-       ========================================== */
-
-    .welcome {
-        width: 90%;
-        max-width: 1100px;
-
-        margin: 70px auto;
-
-        text-align: center;
-    }
-
-
-    .welcome h2 {
-        font-size: 38px;
-
-        margin-bottom: 15px;
-    }
-
-
-    .welcome p {
-        max-width: 750px;
-
-        margin: 0 auto;
-
-        color: #6b7280;
-
-        font-size: 17px;
-    }
-
-
-    /* ==========================================
-       BENEFITS
-       ========================================== */
-
-    .benefits {
-        width: 90%;
-        max-width: 1200px;
-
-        margin: 0 auto 80px;
-
-        display: grid;
-
-        grid-template-columns:
-            repeat(3, 1fr);
-
-        gap: 25px;
-    }
-
-
-    .benefit-card {
-        background: #ffffff;
-
-        padding: 35px 25px;
-
-        border-radius: 14px;
-
-        text-align: center;
-
-        box-shadow:
-            0 5px 20px
-            rgba(0, 0, 0, 0.06);
-
-        transition: 0.3s ease;
-    }
-
-
-    .benefit-card:hover {
-        transform: translateY(-5px);
-    }
-
-
-    .benefit-icon {
-        font-size: 40px;
-
-        margin-bottom: 15px;
-    }
-
-
-    .benefit-card h3 {
-        margin-bottom: 10px;
-
-        font-size: 20px;
-    }
-
-
-    .benefit-card p {
-        color: #6b7280;
-
-        font-size: 15px;
-    }
-
-
-    /* ==========================================
-       FEATURED PRODUCT
-       ========================================== */
-
-    .featured-section {
-        width: 90%;
-        max-width: 1150px;
-
-        margin: 0 auto 80px;
-    }
-
-
-    .featured-heading {
-        text-align: center;
-
-        margin-bottom: 35px;
-    }
-
-
-    .featured-heading h2 {
-        font-size: 36px;
-
-        margin-bottom: 10px;
-    }
-
-
-    .featured-heading p {
-        color: #6b7280;
-    }
-
-
-    .featured-product {
-        background: #ffffff;
-
-        border-radius: 16px;
-
-        padding: 45px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        gap: 60px;
-
-        box-shadow:
-            0 5px 20px
-            rgba(0, 0, 0, 0.06);
-    }
-
-
-    .featured-product-image {
-        width: 350px;
-        height: 350px;
-
-        display: flex;
-
-        align-items: center;
-        justify-content: center;
-
-        flex-shrink: 0;
-
-        overflow: hidden;
-    }
-
-
-    .featured-product-image img {
-        width: 100%;
-        height: 100%;
-
-        object-fit: contain;
-
-        display: block;
-    }
-
-
-    .featured-content {
-        max-width: 500px;
-    }
-
-
-    .featured-label {
-        color: #2563eb;
-
-        font-size: 14px;
-        font-weight: 800;
-
-        letter-spacing: 1px;
-
-        margin-bottom: 10px;
-    }
-
-
-    .featured-content h2 {
-        font-size: 40px;
-
-        margin-bottom: 15px;
-    }
-
-
-    .featured-content p {
-        color: #6b7280;
-
-        margin-bottom: 25px;
-    }
-
-
-    /* ==========================================
-       SHOP CTA
-       ========================================== */
-
-    .shop-cta {
-        width: 90%;
-        max-width: 1100px;
-
-        margin: 0 auto 80px;
-
-        padding: 60px 30px;
-
-        text-align: center;
-
-        background:
-            linear-gradient(
-                135deg,
-                #1e3a8a,
-                #2563eb
-            );
-
-        color: #ffffff;
-
-        border-radius: 16px;
-    }
-
-
-    .shop-cta h2 {
-        font-size: 36px;
-
-        margin-bottom: 15px;
-    }
-
-
-    .shop-cta p {
-        color: #dbeafe;
-
-        max-width: 650px;
-
-        margin: 0 auto 25px;
-    }
-
-
-    /* ==========================================
-       FOOTER
-       ========================================== */
-
-    footer {
-        background: #111827;
-
-        color: #ffffff;
-
-        padding: 35px 6%;
-
-        text-align: center;
-    }
-
-
-    footer p {
-        color: #9ca3af;
-
-        font-size: 14px;
-    }
-
-
-    /* ==========================================
-       TABLET
-       ========================================== */
-
-    @media (max-width: 900px) {
-
-        .hero {
-            flex-direction: column;
-
-            text-align: center;
-
-            padding: 60px 5%;
-        }
-
-
-        .hero-content {
-            max-width: 750px;
-        }
-
-
-        .hero-buttons {
-            justify-content: center;
-        }
-
-
-        .hero-image {
-            width: 320px;
-            height: 320px;
-        }
-
-
-        .benefits {
-            grid-template-columns:
-                repeat(2, 1fr);
-        }
-
-
-        .featured-product {
-            gap: 35px;
-        }
-
-    }
-
-
-    /* ==========================================
-       MOBILE
-       ========================================== */
-
-    @media (max-width: 700px) {
-
-        nav {
-            justify-content: center;
-
-            text-align: center;
-        }
-
-
-        .nav-links {
-            justify-content: center;
-
-            gap: 15px;
-        }
-
-
-        .hero {
-            min-height: auto;
-
-            padding: 55px 20px;
-        }
-
-
-        .hero h1 {
-            font-size: 38px;
-        }
-
-
-        .hero-description {
-            font-size: 16px;
-        }
-
-
-        .hero-image {
-            width: 280px;
-            height: 280px;
-        }
-
-
-        .welcome {
-            width: 92%;
-
-            margin: 50px auto;
-        }
-
-
-        .welcome h2 {
-            font-size: 30px;
-        }
-
-
-        .benefits {
-            width: 92%;
-
-            grid-template-columns: 1fr;
-
-            margin-bottom: 55px;
-        }
-
-
-        .featured-section {
-            width: 92%;
-        }
-
-
-        .featured-heading h2 {
-            font-size: 29px;
-        }
-
-
-        .featured-product {
-            padding: 30px 20px;
-
-            flex-direction: column;
-
-            text-align: center;
-
-            gap: 25px;
-        }
-
-
-        .featured-product-image {
-            width: 280px;
-            height: 280px;
-        }
-
-
-        .featured-content h2 {
-            font-size: 30px;
-        }
-
-
-        .shop-cta {
-            width: 92%;
-
-            padding: 45px 20px;
-        }
-
-
-        .shop-cta h2 {
-            font-size: 29px;
-        }
-
-    }
-
-</style>
-
+    <link rel="stylesheet" href="{% static 'shop/css/style.css' %}">
 </head>
 
 <body>
 
-<!-- ==========================================
-     NAVIGATION
-     ========================================== -->
-
 <nav>
-
-<a href="{% url 'home' %}" class="logo">
-    SAMKY TECH SHOP
-</a>
-
-
-<div class="nav-links">
-
-    <a href="{% url 'home' %}">
-        Home
+    <a href="{% url 'home' %}" class="logo">
+        SAMKY TECH SHOP
     </a>
 
+    <div class="nav-links">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'product_list' %}">Products</a>
+        <a href="{% url 'cart' %}">Cart</a>
 
-    <a href="{% url 'product_list' %}">
-        Products
-    </a>
-
-
-    <a href="{% url 'cart' %}">
-        Cart
-    </a>
-
-
-    {% if user.is_authenticated %}
-
-        <a href="{% url 'my_orders' %}">
-            My Orders
-        </a>
-
-
-        <a href="{% url 'buyer_dashboard' %}">
-            Dashboard
-        </a>
-
-
-        <a href="{% url 'logout' %}">
-            Logout
-        </a>
-
-    {% else %}
-
-        <a href="{% url 'login' %}">
-            Login
-        </a>
-
-
-        <a href="{% url 'register' %}">
-            Register
-        </a>
-
-    {% endif %}
-
-</div>
-
+        {% if user.is_authenticated %}
+            <a href="{% url 'my_orders' %}">My Orders</a>
+            <a href="{% url 'buyer_dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+    </div>
 </nav>
 
-<!-- ==========================================
-     HERO SECTION
-     ========================================== -->
-
 <section class="hero">
+    <div class="hero-content">
 
-<div class="hero-content">
+        <p class="small-title">
+            WELCOME TO SAMKY TECH SHOP
+        </p>
 
-    <p class="small-title">
-        WELCOME TO SAMKY TECH SHOP
-    </p>
+        <h1>
+            Technology
+            <span>Made Simple.</span>
+        </h1>
 
+        <p class="hero-description">
+            Discover smartphones, laptops and quality technology
+            products at SAMKY TECH SHOP.
+        </p>
 
-    <h1>
-        Technology
-        <span>Made Simple.</span>
-    </h1>
+        <div class="hero-buttons">
+            <a href="{% url 'product_list' %}" class="primary-btn">
+                Shop Now
+            </a>
 
-
-    <p class="hero-description">
-        Discover smartphones, electronics and
-        quality technology products at
-        SAMKY TECH SHOP.
-    </p>
-
-
-    <div class="hero-buttons">
-
-        <a
-            href="{% url 'product_list' %}"
-            class="primary-btn"
-        >
-            Shop Now
-        </a>
-
-
-        <a
-            href="#featured"
-            class="secondary-btn"
-        >
-            Featured Product
-        </a>
+            <a href="#benefits" class="secondary-btn">
+                Learn More
+            </a>
+        </div>
 
     </div>
 
-</div>
-
-
-<div class="hero-image">
-
-    <img
-        src="{% static 'shop/images/iphone.jpg' %}"
-        alt="Featured iPhone"
-    >
-
-</div>
-
+    <div class="hero-image">
+        <img
+            src="{% static 'shop/images/iphone.jpg' %}"
+            alt="Featured technology product"
+        >
+    </div>
 </section>
-
-<!-- ==========================================
-     WELCOME SECTION
-     ========================================== -->
 
 <section class="welcome">
 
-<h2>
-    Welcome to SAMKY TECH SHOP
-</h2>
+    <h2>Welcome to SAMKY TECH SHOP</h2>
 
-
-<p>
-    Your destination for modern technology and
-    reliable electronic products. We make it
-    simple to discover the technology you need,
-    choose your favourite products and shop
-    with confidence.
-</p>
+    <p>
+        Your destination for modern technology and reliable
+        electronic products. Browse our catalogue, choose your
+        favourite products and shop with confidence.
+    </p>
 
 </section>
 
-<!-- ==========================================
-     BENEFITS
-     ========================================== -->
+<section class="benefits" id="benefits">
 
-<section class="benefits">
+    <div class="benefit-card">
 
-<div class="benefit-card">
+        <div class="benefit-icon">🚚</div>
 
-    <div class="benefit-icon">
-        🚚
-    </div>
-
-
-    <h3>
-        Fast Delivery
-    </h3>
-
-
-    <p>
-        Get your technology products delivered
-        quickly and conveniently.
-    </p>
-
-</div>
-
-
-
-<div class="benefit-card">
-
-    <div class="benefit-icon">
-        🔒
-    </div>
-
-
-    <h3>
-        Secure Shopping
-    </h3>
-
-
-    <p>
-        Shop with confidence through our secure
-        ecommerce platform.
-    </p>
-
-</div>
-
-
-
-<div class="benefit-card">
-
-    <div class="benefit-icon">
-        ⭐
-    </div>
-
-
-    <h3>
-        Quality Products
-    </h3>
-
-
-    <p>
-        We provide reliable technology products
-        selected with our customers in mind.
-    </p>
-
-</div>
-
-</section>
-
-<!-- ==========================================
-     FEATURED PRODUCT
-     ========================================== -->
-
-<section
-    class="featured-section"
-    id="featured"
->
-
-```
-<div class="featured-heading">
-
-    <h2>
-        Featured Product
-    </h2>
-
-
-    <p>
-        Take a look at one of the products
-        available in our store.
-    </p>
-
-</div>
-
-
-
-<div class="featured-product">
-
-
-    <div class="featured-product-image">
-
-        <img
-            src="{% static 'shop/images/iphone.jpg' %}"
-            alt="iPhone"
-        >
-
-    </div>
-
-
-
-    <div class="featured-content">
-
-        <p class="featured-label">
-            SAMKY TECH FEATURED
-        </p>
-
-
-        <h2>
-            iPhone
-        </h2>
-
+        <h3>Fast Delivery</h3>
 
         <p>
-            Discover the iPhone and explore more
-            smartphones and technology products
-            available at SAMKY TECH SHOP.
+            Get your technology products delivered quickly
+            and conveniently.
         </p>
-
-
-        <a
-            href="{% url 'product_list' %}"
-            class="primary-btn"
-        >
-            Browse Products
-        </a>
 
     </div>
 
-</div>
+    <div class="benefit-card">
+
+        <div class="benefit-icon">🔒</div>
+
+        <h3>Secure Shopping</h3>
+
+        <p>
+            Shop confidently through our secure ecommerce
+            platform.
+        </p>
+
+    </div>
+
+    <div class="benefit-card">
+
+        <div class="benefit-icon">💻</div>
+
+        <h3>Quality Technology</h3>
+
+        <p>
+            Explore smartphones, laptops and other useful
+            technology products.
+        </p>
+
+    </div>
 
 </section>
 
-<!-- ==========================================
-     SHOP CALL TO ACTION
-     ========================================== -->
+<section class="home-cta">
 
-<section class="shop-cta">
+    <h2>Ready to find your next device?</h2>
 
-<h2>
-    Find Your Next Device
-</h2>
+    <p>
+        Explore our available products and find technology
+        that fits your needs.
+    </p>
 
-
-<p>
-    Ready to explore our technology collection?
-    Visit our products page and discover what's
-    available in the store.
-</p>
-
-
-<a
-    href="{% url 'product_list' %}"
-    class="secondary-btn"
->
-    View All Products
-</a>
+    <a href="{% url 'product_list' %}" class="primary-btn">
+        Browse Products
+    </a>
 
 </section>
-
-<!-- ==========================================
-     FOOTER
-     ========================================== -->
 
 <footer>
 
-<p>
-    &copy; 2026 SAMKY TECH SHOP.
-    All rights reserved.
-</p>
+    <p>
+        &copy; 2026 SAMKY TECH SHOP. All rights reserved.
+    </p>
 
 </footer>
 
 </body>
-
 </html>

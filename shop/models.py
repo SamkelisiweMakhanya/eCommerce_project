@@ -20,8 +20,8 @@ ROLE_CHOICES = [
 class Profile(models.Model):
     """Store additional account information for a user.
 
-A profile associates a user with an application role and can
-optionally link the user to a vendor account.
+    A profile associates a user with an application role and can
+    optionally link the user to a vendor account.
     """
 
     user = models.OneToOneField(
@@ -46,7 +46,10 @@ optionally link the user to a vendor account.
 class Store(models.Model):
     """Represent a store owned and managed by a vendor."""
 
-    vendor = models.ForeignKey(User, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
     name = models.CharField(max_length=200)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -78,9 +81,9 @@ class Product(models.Model):
     def __str__(self):
         """Return the product name as its string representation.
 
-    Returns:
-        The name of the product.
-    """
+        Returns:
+            The name of the product.
+        """
         return self.name
 
 
@@ -94,9 +97,15 @@ class Order(models.Model):
         ("CANCELLED", "Cancelled"),
     ]
 
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+    )
     status = models.CharField(
         max_length=30,
         choices=STATUS_CHOICES,
@@ -112,15 +121,24 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
         related_name="items",
     )
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.PROTECT,
+    )
     quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+    )
 
 
 class Review(models.Model):
     """Represent a buyer's review of a product."""
 
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -145,8 +163,11 @@ class Review(models.Model):
     def __str__(self):
         """Return a readable representation of the product review.
 
-    Returns:
-        A string containing the product name, buyer username,
-        and review rating.
-    """
-        return f"{self.product.name} - {self.buyer.username} ({self.rating}/5)"
+        Returns:
+            A string containing the product name, buyer username,
+            and review rating.
+        """
+        return (
+            f"{self.product.name} - "
+            f"{self.buyer.username} ({self.rating}/5)"
+        )
