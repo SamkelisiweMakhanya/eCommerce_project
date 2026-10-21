@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Avg  # noqa: F401
 from drf_spectacular.utils import OpenApiResponse, extend_schema
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -191,47 +191,26 @@ class VendorStoresView(generics.ListAPIView):
 
 
 class StoreReviewsView(generics.ListCreateAPIView):
-    """List reviews for a store and allow eligible buyers to create reviews."""
-
     serializer_class = ReviewSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
-        """Return reviews associated with products in the requested store.
-
-        Returns:
-            A queryset containing store reviews with buyer and product
-            information loaded.
-        """
         store = generics.get_object_or_404(
             Store,
             id=self.kwargs["store_id"],
         )
-
         return Review.objects.filter(
             product__store=store
-        ).select_related(
-            "buyer",
-            "product",
-        )
+        ).select_related("buyer", "product")
 
     def perform_create(self, serializer):
-        """Create a verified review for a purchased product.
+        user = self.request.user
 
-        Args:
-            serializer: The serializer containing the submitted review data.
-
-        Raises:
-            PermissionDenied: If the product is missing, does not belong
-                to the store, has not been purchased by the user, or has
-                already been reviewed by the user.
-        """
         product_id = self.request.data.get("product")
-
         if not product_id:
-            raise PermissionDenied(
-                "A product is required for a review."
-            )
+            raise serializers.ValidationError({
+                "product": "A product is required."
+            })
 
         product = generics.get_object_or_404(
             Product,
@@ -244,30 +223,27 @@ class StoreReviewsView(generics.ListCreateAPIView):
         )
 
         if product.store_id != store.id:
-            raise PermissionDenied(
-                "That product does not belong to this store."
-            )
-
-        if not OrderItem.objects.filter(
-            order__buyer=self.request.user,
-            product=product,
-        ).exists():
-            raise PermissionDenied(
-                "You can only review products you have purchased."
-            )
+            raise serializers.ValidationError({
+                "product": "This product does not belong to this store."
+            })
 
         if Review.objects.filter(
-            buyer=self.request.user,
+            buyer=user,
             product=product,
         ).exists():
-            raise PermissionDenied(
-                "You have already reviewed this product."
-            )
+            raise serializers.ValidationError({
+                "detail": "You have already reviewed this product."
+            })
+
+        purchased = OrderItem.objects.filter(
+            order__buyer=user,
+            product=product,
+        ).exists()
 
         serializer.save(
-            buyer=self.request.user,
+            buyer=user,
             product=product,
-            verified=True,
+            verified=purchased,
         )
 
 

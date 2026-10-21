@@ -111,3 +111,35 @@ The OpenAPI schema is available at:
 ## Development Note
 
 The Django development server is intended for development and testing. Production deployment requires appropriate security settings, a production web server, HTTPS, secure secret management, and production database configuration.
+
+## Project Structure
+
+- `project/` — Django project configuration and URL routing.
+- `shop/` — Ecommerce application, models, views, serializers, and migrations.
+- `static/` — Static assets such as CSS, JavaScript, and images.
+- `media/` — Uploaded media files used during development.
+- `api_examples/` — Sample JSON requests and responses for API testing.
+- `backups/` — Local database and data backups; keep these private.
+- `manage.py` — Django management utility.
+- `requirements.txt` — Python dependencies.
+- `.env` — Local environment variables; do not commit this file.
+
+## Running Tests and Checks
+
+Run Django's system checks:
+
+    python manage.py check
+
+Apply existing migrations:
+
+    python manage.py migrate
+
+Start the development server:
+
+    python manage.py runserver
+
+## Security
+
+- Never commit `.env`, database credentials, or backups containing personal data.
+- Use a dedicated database account rather than the database administrator account.
+- Use HTTPS, secure settings, and a production-ready server when deploying.

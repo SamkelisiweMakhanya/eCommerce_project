@@ -4,6 +4,7 @@ This module maps browser and API URL patterns to their corresponding
 Django views and REST API class-based views.
 """
 
+from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from . import views
@@ -50,6 +51,41 @@ urlpatterns = [
 
     # Authentication and user account pages.
     path("login/", views.user_login, name="login"),
+
+    path(
+        "password-reset/",
+        auth_views.PasswordResetView.as_view(
+            template_name="shop/password_reset.html",
+            email_template_name="shop/password_reset_email.html",
+            subject_template_name="shop/password_reset_subject.txt",
+            success_url="/password-reset/done/",
+        ),
+        name="password_reset",
+    ),
+
+    path(
+        "password-reset/done/",
+        auth_views.PasswordResetDoneView.as_view(
+            template_name="shop/password_reset_done.html",
+        ),
+        name="password_reset_done",
+    ),
+
+    path(
+        "password-reset/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name="shop/password_reset_confirm.html",
+            success_url="/password-reset/complete/",
+        ),
+        name="password_reset_confirm",
+    ),
+    path(
+        "password-reset/complete/",
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name="shop/password_reset_complete.html",
+        ),
+        name="password_reset_complete",
+    ),
 
     path("register/", views.register, name="register"),
 
@@ -225,6 +261,57 @@ urlpatterns = [
         VendorOrderDetailAPIView.as_view(),
         name="vendor-order-detail-api",
     ),
+
+    path(
+        "store/create/",
+        views.store_create,
+        name="store_create",
+    ),
+
+    path(
+        "store/<int:store_id>/edit/",
+        views.store_edit,
+        name="store_edit",
+    ),
+
+    path(
+        "store/<int:store_id>/delete/",
+        views.store_delete,
+        name="store_delete",
+    ),
+
+    path(
+        "product/<int:product_id>/edit/",
+        views.product_edit,
+        name="product_edit",
+    ),
+
+    path(
+        "product/<int:product_id>/delete/",
+        views.product_delete,
+        name="product_delete",
+    ),
+
+    path("stores/", views.store_list, name="store_list"),
+
+    path(
+        "stores/<int:store_id>/",
+        views.store_detail,
+        name="store_detail",
+    ),
+
+    path(
+        "cart/add/<int:product_id>/",
+        views.cart_add,
+        name="cart_add",
+    ),
+
+    path(
+        "product/<int:product_id>/review/",
+        views.submit_review,
+        name="submit_review",
+    ),
+
 
     # Note:
     # The original file contained a second Reddit URL with a different

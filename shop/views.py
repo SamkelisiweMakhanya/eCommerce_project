@@ -1,20 +1,56 @@
 import json
 from decimal import Decimal
+from functools import wraps
+from io import BytesIO
 from urllib.request import Request, urlopen
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMessage
 from django.db import transaction
-from django.db.models import Avg, Q
+from django.db.models import Avg, ProtectedError, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import ProductForm, RegistrationForm
+from .forms import ProductForm, RegistrationForm, StoreForm
 from .models import Order, OrderItem, Product, Profile, Review, Store
 from .serializers import RegisterSerializer
+
+
+def role_required(required_role):
+    """Require the user to be logged in and have the specified role."""
+    def decorator(view_func):
+        @wraps(view_func)
+        @login_required
+        def wrapper(request, *args, **kwargs):
+            profile = Profile.objects.filter(
+                user=request.user
+            ).first()
+
+            role = profile.role if profile else "BUYER"
+
+            if role != required_role:
+                messages.error(
+                    request,
+                    "You do not have permission to access this page."
+                )
+
+                if role == "VENDOR":
+                    return redirect("vendor_dashboard")
+
+                return redirect("home")
+
+            return view_func(request, *args, **kwargs)
+
+        return wrapper
+    return decorator
 
 
 def get_reddit_posts(subreddit, limit=10):
@@ -162,8 +198,8 @@ def product_detail(request, product_id):
 # REVIEWS
 # ============================================================
 
-
-@login_required
+@require_POST
+@role_required("BUYER")
 def submit_review(request, product_id):
     """
     Create or update the authenticated user's review for a product.
@@ -178,97 +214,50 @@ def submit_review(request, product_id):
     Returns:
         Redirect to the product detail page.
     """
-    product = get_object_or_404(
-        Product,
-        id=product_id,
-    )
+    product = get_object_or_404(Product, id=product_id)
 
-    if request.method != "POST":
-        return redirect(
-            "product_detail",
-            product_id=product.id,
-        )
+    rating_value = request.POST.get("rating", "").strip()
+    comment = request.POST.get("comment", "").strip()
 
-    rating = request.POST.get(
-        "rating",
-        "",
-    ).strip()
-
-    comment = request.POST.get(
-        "comment",
-        "",
-    ).strip()
+    if not rating_value:
+        messages.error(request, "Please select a rating.")
+        return redirect("product_detail", product_id=product_id)
 
     try:
-        rating = int(rating)
-
+        rating = int(rating_value)
     except (TypeError, ValueError):
-        messages.error(
-            request,
-            "Please select a rating between 1 and 5.",
-        )
-
-        return redirect(
-            "product_detail",
-            product_id=product.id,
-        )
+        messages.error(request, "Please enter a valid rating.")
+        return redirect("product_detail", product_id=product_id)
 
     if rating < 1 or rating > 5:
-        messages.error(
-            request,
-            "Rating must be between 1 and 5.",
-        )
-
-        return redirect(
-            "product_detail",
-            product_id=product.id,
-        )
+        messages.error(request, "Rating must be between 1 and 5.")
+        return redirect("product_detail", product_id=product_id)
 
     if not comment:
-        messages.error(
-            request,
-            "Please enter a comment.",
-        )
+        messages.error(request, "Please enter a review comment.")
+        return redirect("product_detail", product_id=product_id)
 
-        return redirect(
-            "product_detail",
-            product_id=product.id,
-        )
+    purchased = OrderItem.objects.filter(
+        order__buyer=request.user,
+        product=product,
+    ).exists()
 
-    existing_review = Review.objects.filter(
+    _, created = Review.objects.update_or_create(
         buyer=request.user,
         product=product,
-    ).first()
-
-    if existing_review:
-        existing_review.rating = rating
-        existing_review.comment = comment
-        existing_review.save()
-
-        messages.success(
-            request,
-            "Your review has been updated.",
-        )
-
-    else:
-        Review.objects.create(
-            buyer=request.user,
-            product=product,
-            rating=rating,
-            comment=comment,
-            verified=False,
-        )
-
-        messages.success(
-            request,
-            "Your review has been submitted.",
-        )
-
-    return redirect(
-        "product_detail",
-        product_id=product.id,
+        defaults={
+            "rating": rating,
+            "comment": comment,
+            "verified": purchased,
+        },
     )
 
+    if created:
+        messages.success(request, "Your review has been submitted.")
+    else:
+        messages.success(request, "Your review has been updated.")
+
+    return redirect("product_detail", product_id=product_id)
 
 # ============================================================
 # LOGIN / REGISTER / LOGOUT
@@ -417,7 +406,7 @@ def user_logout(request):
 # ============================================================
 
 
-@login_required
+@role_required("BUYER")
 def buyer_dashboard(request):
     """
     Display the authenticated buyer's orders.
@@ -450,19 +439,49 @@ def buyer_dashboard(request):
 # ============================================================
 
 
-@login_required
+@role_required("VENDOR")
 def vendor_dashboard(request):
-    """
-    Display the authenticated vendor's store and products.
+    """Display all stores and products belonging to the vendor."""
+    profile = Profile.objects.filter(
+        user=request.user
+    ).first()
 
-    Only users with a VENDOR profile role can access this dashboard.
+    stores = Store.objects.filter(
+        vendor=request.user
+    ).order_by("-created_at")
 
-    Args:
-        request: The incoming Django HTTP request.
+    products = (
+        Product.objects
+        .filter(store__vendor=request.user)
+        .select_related("store")
+        .order_by("-id")
+    )
 
-    Returns:
-        Rendered vendor dashboard page or redirect to home.
-    """
+    available_products = products.filter(
+        stock__gt=0
+    ).count()
+
+    return render(
+        request,
+        "shop/vendor_dashboard.html",
+        {
+            "profile": profile,
+            "stores": stores,
+            "products": products,
+            "available_products": available_products,
+        },
+    )
+
+
+# ============================================================
+# STORE MANAGEMENT
+# ============================================================
+
+
+@role_required("VENDOR")
+def store_create(request):
+    """Create a store for the authenticated vendor."""
+
     profile = Profile.objects.filter(
         user=request.user
     ).first()
@@ -470,28 +489,190 @@ def vendor_dashboard(request):
     if profile is None or profile.role != "VENDOR":
         messages.error(
             request,
-            "You do not have permission to access the vendor dashboard.",
+            "You do not have permission to create a store.",
         )
-
         return redirect("home")
 
-    store = Store.objects.filter(
-        vendor=request.user
-    ).first()
+    if request.method == "POST":
+        form = StoreForm(request.POST)
 
-    products = (
-        Product.objects
-        .filter(store__vendor=request.user)
-        .select_related("store")
-    )
+        if form.is_valid():
+            store = form.save(commit=False)
+            store.vendor = request.user
+            store.save()
+
+            messages.success(
+                request,
+                f"{store.name} was created successfully.",
+            )
+
+            return redirect("vendor_dashboard")
+
+    else:
+        form = StoreForm()
 
     return render(
         request,
-        "shop/vendor_dashboard.html",
+        "shop/store_form.html",
         {
-            "profile": profile,
+            "form": form,
+            "title": "Create Store",
+        },
+    )
+
+
+@role_required("VENDOR")
+def store_edit(request, store_id):
+    """Edit a store owned by the authenticated vendor."""
+
+    store = get_object_or_404(
+        Store,
+        id=store_id,
+        vendor=request.user,
+    )
+
+    if request.method == "POST":
+        form = StoreForm(
+            request.POST,
+            instance=store,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                f"{store.name} was updated successfully.",
+            )
+
+            return redirect("vendor_dashboard")
+
+    else:
+        form = StoreForm(instance=store)
+
+    return render(
+        request,
+        "shop/store_form.html",
+        {
+            "form": form,
+            "title": "Edit Store",
             "store": store,
-            "products": products,
+        },
+    )
+
+
+@role_required("VENDOR")
+def store_delete(request, store_id):
+    """Delete a store owned by the authenticated vendor."""
+
+    store = get_object_or_404(
+        Store,
+        id=store_id,
+        vendor=request.user,
+    )
+
+    if request.method == "POST":
+        store_name = store.name
+        store.delete()
+
+        messages.success(
+            request,
+            f"{store_name} was deleted successfully.",
+        )
+
+        return redirect("vendor_dashboard")
+
+    return render(
+        request,
+        "shop/store_confirm_delete.html",
+        {
+            "store": store,
+        },
+    )
+
+
+# ============================================================
+# PRODUCT MANAGEMENT
+# ============================================================
+
+
+@role_required("VENDOR")
+def product_edit(request, product_id):
+    """Edit a product belonging to the authenticated vendor."""
+
+    product = get_object_or_404(
+        Product,
+        id=product_id,
+        store__vendor=request.user,
+    )
+
+    if request.method == "POST":
+        form = ProductForm(
+            request.POST,
+            request.FILES,
+            instance=product,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                f"{product.name} was updated successfully.",
+            )
+
+            return redirect("vendor_dashboard")
+
+    else:
+        form = ProductForm(instance=product)
+
+    return render(
+        request,
+        "shop/product_edit.html",
+        {
+            "form": form,
+            "product": product,
+        },
+    )
+
+
+@role_required("VENDOR")
+def product_delete(request, product_id):
+    """Delete a product belonging to the authenticated vendor."""
+
+    product = get_object_or_404(
+        Product,
+        id=product_id,
+        store__vendor=request.user,
+    )
+
+    if request.method == "POST":
+        product_name = product.name
+
+        try:
+            product.delete()
+
+        except ProtectedError:
+            messages.error(
+                request,
+                "This product cannot be deleted because it is "
+                "associated with an existing order.",
+            )
+
+            return redirect("vendor_dashboard")
+
+        messages.success(
+            request,
+            f"{product_name} was deleted successfully.",
+        )
+
+        return redirect("vendor_dashboard")
+
+    return render(
+        request,
+        "shop/product_confirm_delete.html",
+        {
+            "product": product,
         },
     )
 
@@ -501,7 +682,7 @@ def vendor_dashboard(request):
 # ============================================================
 
 
-@login_required
+@role_required("VENDOR")
 def product_create(request, store_id):
     """
     Create a new product for a store owned by the current vendor.
@@ -672,7 +853,7 @@ def _get_cart_items(request):
 # CART
 # ============================================================
 
-
+@role_required("BUYER")
 def cart(request):
     """
     Display the shopping cart stored in the user's session.
@@ -699,71 +880,52 @@ def cart(request):
     )
 
 
+@role_required("BUYER")
+@require_POST
 def cart_add(request, product_id):
     """
-    Add one unit of a product to the shopping cart.
+        Add one unit of a product to the shopping cart.
 
-    The quantity cannot exceed the product's available stock.
+        The quantity cannot exceed the product's available stock.
 
-    Args:
-        request: The incoming Django HTTP request.
-        product_id: ID of the product to add.
+        Args:
+            request: The incoming Django HTTP request.
+            product_id: ID of the product to add.
 
-    Returns:
-        Redirect to the cart or product list.
-    """
-    product = get_object_or_404(
-        Product,
-        id=product_id,
-    )
+        Returns:
+            Redirect to the cart or product list.
+        """
+    product = get_object_or_404(Product, id=product_id)
 
     if product.stock <= 0:
-        messages.error(
-            request,
-            "This product is out of stock.",
-        )
+        messages.error(request, "This product is out of stock.")
+        return redirect("store_detail", store_id=product.store_id)
 
-        return redirect("product_list")
-
-    cart_data = _get_cart(request)
-    key = str(product.id)
-
-    try:
-        current_quantity = int(
-            cart_data.get(
-                key,
-                0,
-            )
-        )
-
-    except (TypeError, ValueError):
-        current_quantity = 0
+    cart = _get_cart(request)
+    product_key = str(product.id)
+    current_quantity = int(cart.get(product_key, 0))
 
     if current_quantity >= product.stock:
         messages.warning(
             request,
             "You cannot add more than the available stock.",
         )
-
         return redirect("cart")
 
-    cart_data[key] = (
-        current_quantity + 1
-    )
-
-    _save_cart(
-        request,
-        cart_data,
-    )
+    # Add one item to the cart.
+    cart[product_key] = current_quantity + 1
+    _save_cart(request, cart)
 
     messages.success(
         request,
         f"{product.name} was added to your cart.",
     )
 
+    # Take the buyer to the cart.
     return redirect("cart")
 
 
+@role_required("BUYER")
 def cart_remove(request, product_id):
     """
     Remove a product completely from the shopping cart.
@@ -795,6 +957,7 @@ def cart_remove(request, product_id):
     return redirect("cart")
 
 
+@role_required("BUYER")
 def update_cart(request, product_id):
     """
     Update the quantity of a product in the shopping cart.
@@ -895,9 +1058,81 @@ def update_cart(request, product_id):
 # ============================================================
 # CHECKOUT
 # ============================================================
+def build_invoice_pdf(order):
+    """Build a PDF invoice containing the order and its item details."""
+    buffer = BytesIO()
+
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    _, height = A4
+
+    y = height - 50
+
+    pdf.setFont("Helvetica-Bold", 18)
+    pdf.drawString(50, y, "INVOICE")
+
+    y -= 35
+
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(50, y, f"Order ID: {order.id}")
+
+    y -= 18
+    pdf.drawString(50, y, f"Customer: {order.buyer.username}")
+
+    y -= 18
+    pdf.drawString(50, y, f"Email: {order.buyer.email}")
+
+    y -= 30
+
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(50, y, "Items")
+
+    y -= 20
+
+    pdf.setFont("Helvetica", 10)
+
+    for item in order.items.select_related("product").all():
+        subtotal = item.price * item.quantity
+
+        line = (
+            f"{item.product.name} x {item.quantity} "
+            f"@ R{item.price:.2f} = R{subtotal:.2f}"
+        )
+
+        pdf.drawString(50, y, line)
+
+        y -= 18
+
+        if y < 60:
+            pdf.showPage()
+            y = height - 50
+            pdf.setFont("Helvetica", 10)
+
+    y -= 10
+
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(
+        50,
+        y,
+        f"Total: R{order.total:.2f}",
+    )
+
+    y -= 20
+
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(
+        50,
+        y,
+        f"Status: {order.status}",
+    )
+
+    pdf.save()
+
+    buffer.seek(0)
+
+    return buffer.getvalue()
 
 
-@login_required
+@role_required("BUYER")
 def checkout(request):
     """
     Process the shopping cart and create a new order.
@@ -1017,13 +1252,56 @@ def checkout(request):
                     update_fields=["stock"]
                 )
 
-        request.session["cart"] = {}
-        request.session.modified = True
+            invoice_lines = [
+                "INVOICE",
+                "=======",
+                f"Order ID: {order.id}",
+                f"Customer: {request.user.username}",
+                f"Email: {request.user.email}",
+                "",
+                "Items:",
+            ]
 
-        return redirect(
-            "checkout_success",
-            order_id=order.id,
-        )
+            for item in order.items.select_related("product").all():
+                subtotal = item.price * item.quantity
+
+                invoice_lines.append(
+                    f"- {item.product.name} x {item.quantity} "
+                    f"@ R{item.price:.2f} = R{subtotal:.2f}"
+                )
+
+            invoice_lines.extend(
+                [
+                    "",
+                    f"Total: R{order.total:.2f}",
+                    f"Status: {order.status}",
+                ]
+            )
+
+            invoice_pdf = build_invoice_pdf(order)
+
+            invoice = EmailMessage(
+                subject=f"Invoice for Order #{order.id}",
+                body="\n".join(invoice_lines),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[request.user.email],
+            )
+
+            invoice.attach(
+                f"invoice_order_{order.id}.pdf",
+                invoice_pdf,
+                "application/pdf",
+            )
+
+            invoice.send(fail_silently=False)
+
+            request.session["cart"] = {}
+            request.session.modified = True
+
+            return redirect(
+                "checkout_success",
+                order_id=order.id,
+            )
 
     total_quantity = sum(
         item["quantity"]
@@ -1047,7 +1325,7 @@ def checkout(request):
 # ============================================================
 
 
-@login_required
+@role_required("BUYER")
 def checkout_success(request, order_id):
     """
     Display the successful checkout page for an order.
@@ -1081,7 +1359,7 @@ def checkout_success(request, order_id):
 # ============================================================
 
 
-@login_required
+@role_required("BUYER")
 def my_orders(request):
     """
     Display all orders belonging to the authenticated buyer.
@@ -1116,7 +1394,7 @@ def my_orders(request):
     )
 
 
-@login_required
+@role_required("BUYER")
 def order_detail(request, order_id):
     """
     Display the details and invoice information for an order.
@@ -1153,6 +1431,35 @@ def order_detail(request, order_id):
         {
             "order": order,
             "invoice_items": invoice_items,
+        },
+    )
+
+
+def store_list(request):
+    """Show stores that buyers can browse."""
+    stores = Store.objects.order_by("name")
+
+    return render(
+        request,
+        "shop/store_list.html",
+        {"stores": stores},
+    )
+
+
+def store_detail(request, store_id):
+    """Show the products belonging to a selected store."""
+    store = get_object_or_404(Store, id=store_id)
+
+    products = Product.objects.filter(
+        store=store
+    ).order_by("name")
+
+    return render(
+        request,
+        "shop/store_detail.html",
+        {
+            "store": store,
+            "products": products,
         },
     )
 

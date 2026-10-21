@@ -254,15 +254,13 @@
 
 </div>
 
-<div class="reviews-section">
-
-    <h2>Customer Reviews</h2>
-
-    {% if reviews %}
-        {% for review in reviews %}
+    {% for review in reviews %}
             <div class="review">
+                <strong>{{ review.buyer.username }}</strong>
 
-                <strong>{{ review.user.username }}</strong>
+                {% if review.verified %}
+                    <span>Verified purchase</span>
+                {% endif %}
 
                 <div class="review-rating">
                     ★ {{ review.rating }}/5
@@ -271,25 +269,38 @@
                 <div class="review-comment">
                     {{ review.comment }}
                 </div>
-
             </div>
         {% empty %}
-            <p>No reviews yet.</p>
+            <p>No reviews yet. Be the first to review this product!</p>
         {% endfor %}
-    {% else %}
-        <p>No reviews yet.</p>
-    {% endif %}
 
-    {% if user.is_authenticated %}
-        <form method="post" class="review-form">
-            {% csrf_token %}
+        {% if user.is_authenticated %}
+        
+    <form method="post" action="{% url 'submit_review' product.id %}">
+        {% csrf_token %}
 
-            {{ review_form.as_p }}
+        <label for="rating">Rating</label>
+        <select name="rating" id="rating" required>
+            <option value="">Select a rating</option>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Very good</option>
+            <option value="3">3 - Good</option>
+            <option value="2">2 - Fair</option>
+            <option value="1">1 - Poor</option>
+        </select>
 
-            <button type="submit" class="add-cart-button">
-                Submit Review
-            </button>
-        </form>
+        <label for="comment">Your review</label>
+        <textarea
+            name="comment"
+            id="comment"
+            rows="4"
+            required
+            placeholder="Tell us what you think about this product..."
+        ></textarea>
+
+        <button type="submit">Submit Review</button>
+    </form>
+
     {% endif %}
 
 </div>

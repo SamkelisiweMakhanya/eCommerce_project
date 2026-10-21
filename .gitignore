@@ -1,7 +1,39 @@
-venv/
+
+# Python
 __pycache__/
-*.pyc
-login.json
-register.json
+*.py[cod]
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
+
+# Django generated files
+staticfiles/
+*.log
+
+# Local databases and backups
+*.sqlite3
+*.sql
+*.bak
+backups/
+
+# Local data exports and API request examples
+ecommerce_data_backup_*.json
+users_backup_*.json
+api_examples/
+
+# User-uploaded media
 media/
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

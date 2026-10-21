@@ -6,7 +6,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Product, Profile, Review
+from .models import Product, Profile, Review, Store
 
 
 class RegistrationForm(UserCreationForm):
@@ -62,6 +62,50 @@ class RegistrationForm(UserCreationForm):
             )
 
         return user
+
+    def clean_email(self):
+        """Normalize email and reject addresses already in use."""
+        email = self.cleaned_data["email"].strip().lower()
+
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                "An account with this email already exists."
+            )
+
+        return email
+
+    def clean_username(self):
+        """Normalize the username by removing surrounding whitespace."""
+        return self.cleaned_data["username"].strip()
+
+
+class StoreForm(forms.ModelForm):
+    """Provide a form for creating and updating stores."""
+
+    class Meta:
+        """Define the model and fields used by the store form."""
+
+        model = Store
+        fields: ClassVar[list[str]] = [
+            "name",
+            "description",
+        ]
+
+        widgets: ClassVar[dict[str, forms.Widget]] = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter store name",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 5,
+                    "placeholder": "Enter store description",
+                }
+            ),
+        }
 
 
 class ProductForm(forms.ModelForm):
