@@ -239,6 +239,7 @@ def submit_review(request, product_id):
 
     purchased = OrderItem.objects.filter(
         order__buyer=request.user,
+        order__status__in=["PAID", "COMPLETED"],
         product=product,
     ).exists()
 

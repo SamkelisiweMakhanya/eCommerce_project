@@ -246,7 +246,7 @@ class ShopTestCase(TestCase):
         order = Order.objects.create(
             buyer=self.buyer,
             total=Decimal("100.00"),
-            status="PENDING",
+            status="COMPLETED",
         )
 
         OrderItem.objects.create(
@@ -339,7 +339,7 @@ class ShopTestCase(TestCase):
         order = Order.objects.create(
             buyer=self.buyer,
             total=Decimal("100.00"),
-            status="PENDING",
+            status="COMPLETED",
         )
 
         OrderItem.objects.create(
@@ -381,6 +381,78 @@ class ShopTestCase(TestCase):
         self.assertTrue(
             review.verified,
         )
+
+    def test_api_pending_order_review_is_unverified(self):
+        """A pending order must not qualify a review as verified."""
+        order = Order.objects.create(
+            buyer=self.buyer,
+            total=Decimal("100.00"),
+            status="PENDING",
+        )
+
+        OrderItem.objects.create(
+            order=order,
+            product=self.product,
+            quantity=1,
+            price=self.product.price,
+        )
+
+        api_client = APIClient()
+        api_client.force_authenticate(user=self.buyer)
+
+        response = api_client.post(
+            reverse("store-reviews", args=[self.store.id]),
+            {
+                "product": self.product.id,
+                "rating": 5,
+                "comment": "Review for a pending order.",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+        review = Review.objects.get(
+            buyer=self.buyer,
+            product=self.product,
+        )
+        self.assertFalse(review.verified)
+
+    def test_api_cancelled_order_review_is_unverified(self):
+        """A cancelled order must not qualify a review as verified."""
+        order = Order.objects.create(
+            buyer=self.buyer,
+            total=Decimal("100.00"),
+            status="CANCELLED",
+        )
+
+        OrderItem.objects.create(
+            order=order,
+            product=self.product,
+            quantity=1,
+            price=self.product.price,
+        )
+
+        api_client = APIClient()
+        api_client.force_authenticate(user=self.buyer)
+
+        response = api_client.post(
+            reverse("store-reviews", args=[self.store.id]),
+            {
+                "product": self.product.id,
+                "rating": 4,
+                "comment": "Review for a cancelled order.",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+        review = Review.objects.get(
+            buyer=self.buyer,
+            product=self.product,
+        )
+        self.assertFalse(review.verified)
 
     def test_unauthenticated_api_user_cannot_create_review(self):
         """Unauthenticated users should not be able to create reviews."""
@@ -513,3 +585,144 @@ class ShopTestCase(TestCase):
                 password="TestPassword123!",
             )
         )
+
+    def create_test_order(self, status="PENDING", product=None):
+        """Create an order and item for vendor status API tests."""
+        product = product or self.product
+
+        order = Order.objects.create(
+            buyer=self.buyer,
+            total=product.price,
+            status=status,
+        )
+
+        OrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=1,
+            price=product.price,
+        )
+
+        return order
+
+    def test_vendor_can_mark_pending_order_paid(self):
+        """A vendor can move an order from PENDING to PAID."""
+        order = self.create_test_order(status="PENDING")
+        client = APIClient()
+        client.force_authenticate(user=self.vendor)
+
+        response = client.patch(
+            reverse(
+                "vendor-order-status-api",
+                kwargs={"order_id": order.id},
+            ),
+            {"status": "PAID"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        order.refresh_from_db()
+        self.assertEqual(order.status, "PAID")
+
+    def test_vendor_can_mark_paid_order_completed(self):
+        """A vendor can move an order from PAID to COMPLETED."""
+        order = self.create_test_order(status="PAID")
+        client = APIClient()
+        client.force_authenticate(user=self.vendor)
+
+        response = client.patch(
+            reverse(
+                "vendor-order-status-api",
+                kwargs={"order_id": order.id},
+            ),
+            {"status": "COMPLETED"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        order.refresh_from_db()
+        self.assertEqual(order.status, "COMPLETED")
+
+    def test_buyer_cannot_update_vendor_order_status(self):
+        """A buyer cannot use the vendor status endpoint."""
+        order = self.create_test_order(status="PENDING")
+        client = APIClient()
+        client.force_authenticate(user=self.buyer)
+
+        response = client.patch(
+            reverse(
+                "vendor-order-status-api",
+                kwargs={"order_id": order.id},
+            ),
+            {"status": "PAID"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 403)
+        order.refresh_from_db()
+        self.assertEqual(order.status, "PENDING")
+
+    def test_vendor_cannot_update_another_vendors_order(self):
+        """A vendor cannot update an order containing another vendor's
+        product."""
+        other_vendor = User.objects.create_user(
+            username="other_vendor",
+            email="other-vendor@example.com",
+            password="TestPassword123!",
+        )
+        Profile.objects.create(
+            user=other_vendor,
+            role="VENDOR",
+            vendor=other_vendor,
+        )
+        other_store = Store.objects.create(
+            vendor=other_vendor,
+            name="Other Store",
+            description="Another vendor's store.",
+        )
+        other_product = Product.objects.create(
+            store=other_store,
+            name="Other Product",
+            description="Another vendor's product.",
+            price=Decimal("50.00"),
+            stock=5,
+        )
+        order = self.create_test_order(
+            status="PENDING",
+            product=other_product,
+        )
+
+        client = APIClient()
+        client.force_authenticate(user=self.vendor)
+
+        response = client.patch(
+            reverse(
+                "vendor-order-status-api",
+                kwargs={"order_id": order.id},
+            ),
+            {"status": "PAID"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 404)
+        order.refresh_from_db()
+        self.assertEqual(order.status, "PENDING")
+
+    def test_vendor_cannot_update_cancelled_order(self):
+        """A cancelled order cannot be moved to another status."""
+        order = self.create_test_order(status="CANCELLED")
+        client = APIClient()
+        client.force_authenticate(user=self.vendor)
+
+        response = client.patch(
+            reverse(
+                "vendor-order-status-api",
+                kwargs={"order_id": order.id},
+            ),
+            {"status": "PAID"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        order.refresh_from_db()
+        self.assertEqual(order.status, "CANCELLED")

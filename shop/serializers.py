@@ -91,7 +91,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         return value
 
 
-
 class RegisterSerializer(serializers.ModelSerializer):
     """Serialize data required to register a new user."""
 

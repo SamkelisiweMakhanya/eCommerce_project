@@ -238,6 +238,7 @@ class StoreReviewsView(generics.ListCreateAPIView):
         purchased = OrderItem.objects.filter(
             order__buyer=user,
             product=product,
+            order__status__in=["PAID", "COMPLETED"],
         ).exists()
 
         serializer.save(
@@ -420,81 +421,71 @@ class VendorOrderStatusAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def patch(self, request, order_id):
-        """Update the status of an order belonging to the vendor.
-
-    Args:
-        request: The HTTP request containing the new order status.
-        order_id: The database ID of the order to update.
-
-    Returns:
-        A response containing the updated order or an error message.
-
-    Raises:
-        PermissionDenied: If the authenticated user is not a vendor.
-        """
+        """Allow vendors to update order status safely."""
         if not hasattr(request.user, "profile"):
             raise PermissionDenied("You do not have a profile.")
 
         if request.user.profile.role != "VENDOR":
-            raise PermissionDenied(
-                "Only vendors can update order status."
-            )
+            raise PermissionDenied("Only vendors can update order status.")
 
         new_status = request.data.get("status")
 
-        allowed_statuses = ["PAID", "COMPLETED", "CANCELLED"]
-
-        if new_status not in allowed_statuses:
+        if new_status not in ["PAID", "COMPLETED"]:
             return Response(
-                {
-                    "error": (
-                        "Status must be PAID, COMPLETED, or CANCELLED."
-                    )
-                },
+                {"error": "Status must be PAID or COMPLETED."},
                 status=400,
             )
 
-        try:
-            order = Order.objects.get(
-                id=order_id,
-                items__product__store__vendor=request.user,
-            )
-        except Order.DoesNotExist:
-            return Response(
-                {"error": "Order not found."},
-                status=404,
-            )
+        with transaction.atomic():
+            try:
+                order = Order.objects.select_for_update().get(id=order_id)
+            except Order.DoesNotExist:
+                return Response(
+                    {"error": "Order not found."},
+                    status=404,
+                )
 
-        if order.status == "CANCELLED":
-            return Response(
-                {"error": "Cancelled orders cannot be updated."},
-                status=400,
-            )
+            vendor_owns_item = order.items.filter(
+                product__store__vendor=request.user
+            ).exists()
 
-        if order.status == "COMPLETED":
-            return Response(
-                {"error": "Completed orders cannot be updated."},
-                status=400,
-            )
+            if not vendor_owns_item:
+                return Response(
+                    {"error": "Order not found."},
+                    status=404,
+                )
 
-        if order.status == "PENDING" and new_status == "COMPLETED":
-            return Response(
-                {
-                    "error": (
-                        "A pending order must be marked PAID "
-                        "before it can be completed."
-                    )
-                },
-                status=400,
-            )
+            if order.status in ["CANCELLED", "COMPLETED"]:
+                return Response(
+                    {
+                        "error": (
+                            "Cancelled or completed orders cannot be updated."
+                        )
+                    },
+                    status=400,
+                )
 
-        order.status = new_status
-        order.save(update_fields=["status"])
+            if order.status == "PENDING" and new_status != "PAID":
+                return Response(
+                    {
+                        "error": (
+                            "A pending order must be marked "
+                            "PAID before completion."
+                        )
+                    },
+                    status=400,
+                )
 
-        return Response(
-            OrderSerializer(order).data,
-            status=200,
-        )
+            if order.status == "PAID" and new_status != "COMPLETED":
+                return Response(
+                    {"error": "A paid order can only be marked COMPLETED."},
+                    status=400,
+                )
+
+            order.status = new_status
+            order.save(update_fields=["status"])
+
+        return Response(OrderSerializer(order).data, status=200)
 
 
 @extend_schema(
@@ -515,6 +506,14 @@ class CreateOrderAPIView(APIView):
         Returns:
             A response containing the created order or an error message.
         """
+        if not hasattr(request.user, "profile"):
+            raise PermissionDenied("You do not have a profile.")
+
+        if request.user.profile.role != "BUYER":
+            raise PermissionDenied(
+                "Only buyers can create orders."
+            )
+
         serializer = CreateOrderSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -611,38 +610,27 @@ class PayOrderAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, order_id):
-        """Mark a pending order as paid.
+        """Mark a pending order as paid atomically."""
+        with transaction.atomic():
+            try:
+                order = Order.objects.select_for_update().get(
+                    id=order_id,
+                    buyer=request.user,
+                )
+            except Order.DoesNotExist:
+                return Response(
+                    {"error": "Order not found."},
+                    status=404,
+                )
 
-        Args:
-            request: The HTTP request from the authenticated buyer.
-            order_id: The database ID of the order to pay.
+            if order.status != "PENDING":
+                return Response(
+                    {"error": "Only pending orders can be paid."},
+                    status=400,
+                )
 
-        Returns:
-            A response containing the updated order or an error message.
-        """
-        try:
-            order = Order.objects.get(
-                id=order_id,
-                buyer=request.user,
-            )
-        except Order.DoesNotExist:
-            return Response(
-                {"error": "Order not found."},
-                status=404,
-            )
-
-        if order.status != "PENDING":
-            return Response(
-                {
-                    "error": (
-                        "Only pending orders can be paid."
-                    )
-                },
-                status=400,
-            )
-
-        order.status = "PAID"
-        order.save(update_fields=["status"])
+            order.status = "PAID"
+            order.save(update_fields=["status"])
 
         return Response(
             OrderSerializer(order).data,
