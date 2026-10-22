@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Store - SAMKY TECH SHOP</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<main>
+    <section>
+        <h1>Delete Store</h1>
+
+        <p>
+            Are you sure you want to delete
+            <strong>{{ store.name }}</strong>?
+        </p>
+
+        <p>
+            This action cannot be undone.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <button type="submit">
+                Yes, Delete Store
+            </button>
+
+            <a href="{% url 'vendor_dashboard' %}">
+                Cancel
+            </a>
+        </form>
+    </section>
+</main>
+
+</body>
+</html>

@@ -115,8 +115,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DB_NAME", "ecommerce_db"),
-        "USER": os.environ.get("DB_USER", "root"),
-        "PASSWORD": "RDWN25sammy#",
+        "USER": "ecommerce_app",
+        "PASSWORD": "FreshDb_8246!",
         "HOST": os.environ.get("DB_HOST", "localhost"),
         "PORT": os.environ.get("DB_PORT", "3306"),
     }
@@ -192,19 +192,17 @@ STATICFILES_DIRS = [
 
 # Use Django's console email backend during development.
 # Emails are displayed in the console instead of being sent.
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
-
-
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@ecommerce.local"
 # ---------------------------------------------------------------------------
 # Authentication and user settings
 # ---------------------------------------------------------------------------
 
 # URL where unauthenticated users are redirected to log in.
 LOGIN_URL = "/login/"
+
+# URL where users are redirected after logging out.
+PASSWORD_RESET_TIMEOUT = 3600
 
 # URL users are redirected to after successful login.
 LOGIN_REDIRECT_URL = "/"

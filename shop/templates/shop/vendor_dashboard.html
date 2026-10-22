@@ -8,7 +8,6 @@
 
     <title>Vendor Dashboard | SAMKY TECH SHOP</title>
     <link rel="stylesheet" href="{% static 'shop/css/style.css' %}">
-
 </head>
 
 <body>
@@ -41,8 +40,43 @@
             <span class="vendor-name">
                 {{ request.user.username }}
             </span>
-            👋
         </p>
+    </section>
+
+
+    <!-- STORE MANAGEMENT -->
+    <section class="stores-section">
+        <h2>My Stores</h2>
+
+        <p>
+            <a href="{% url 'store_create' %}">
+                + Create New Store
+            </a>
+       </p>
+
+        {% for store in stores %}
+            <div class="store-card">
+                <h3>{{ store.name }}</h3>
+                <p>{{ store.description }}</p>
+
+                <a href="{% url 'store_edit' store.id %}">
+                    Edit Store
+                </a>
+
+                <a href="{% url 'product_create' store.id %}">
+                    Add Product
+                </a>
+
+                <a href="{% url 'store_delete' store.id %}">
+                    Delete Store
+                </a>
+            </div>
+        {% empty %}
+            <p>You haven't created a store yet.</p>
+            <a href="{% url 'store_create' %}">
+                Create Your First Store
+            </a>
+        {% endfor %}
     </section>
 
 
@@ -53,33 +87,40 @@
 
         <a href="{% url 'product_list' %}" class="action-card">
             <div class="action-icon">
-                🛍️
+                View
             </div>
 
             <h3>View Products</h3>
 
             <p>
-                Browse the products currently available in your store.
+                Browse the products currently available in the store.
             </p>
         </a>
 
 
-        <a href="{% url 'product_create' store_id=store.id %}" class="action-card">
-            <div class="action-icon">
-                ➕
-            </div>
+        {% if store %}
 
-            <h3>Add Product</h3>
+            <a
+                href="{% url 'product_create' store_id=store.id %}"
+                class="action-card"
+            >
+                <div class="action-icon">
+                    +
+                </div>
 
-            <p>
-                Add a new product to your store and make it available to customers.
-            </p>
-        </a>
+                <h3>Add Product</h3>
+
+                <p>
+                    Add a new product to your store.
+                </p>
+            </a>
+
+        {% endif %}
 
 
         <a href="{% url 'home' %}" class="action-card">
             <div class="action-icon">
-                🏠
+                Store
             </div>
 
             <h3>Visit Store</h3>
@@ -99,11 +140,11 @@
 
         <div class="stat-card">
             <div class="stat-label">
-                Total Products
+                <p>Total Products: {{ products|length }}</p>
             </div>
 
             <div class="stat-number">
-                {{ products|length }}
+                <p>Available Products: {{ available_products }}</p>
             </div>
         </div>
 
@@ -114,11 +155,7 @@
             </div>
 
             <div class="stat-number">
-                {% if products %}
-                    {{ products|length }}
-                {% else %}
-                    0
-                {% endif %}
+                {{ products|length }}
             </div>
         </div>
 
@@ -129,7 +166,7 @@
             </div>
 
             <div class="stat-number" style="font-size: 21px;">
-                {{ store.name|default:"SAMKY TECH SHOP" }}
+                {{ store.name|default:"No store created" }}
             </div>
         </div>
 
@@ -145,12 +182,14 @@
                 Your Products
             </h2>
 
-            <a
-                href="{% url 'product_create' store_id=store.id %}"
-                class="add-product-btn"
-            >
-                + Add Product
-            </a>
+            {% if store %}
+                <a
+                    href="{% url 'product_create' store_id=store.id %}"
+                    class="add-product-btn"
+                >
+                    + Add Product
+                </a>
+            {% endif %}
 
         </div>
 
@@ -167,7 +206,7 @@
                             <th>Description</th>
                             <th>Price</th>
                             <th>Stock</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
 
@@ -224,12 +263,28 @@
 
 
                                 <td>
+
                                     <a
                                         href="{% url 'product_detail' product.id %}"
                                         class="view-btn"
                                     >
                                         View
                                     </a>
+
+                                    <a
+                                        href="{% url 'product_edit' product_id=product.id %}"
+                                        class="view-btn"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    <a
+                                        href="{% url 'product_delete' product_id=product.id %}"
+                                        class="view-btn"
+                                    >
+                                        Delete
+                                    </a>
+
                                 </td>
 
                             </tr>
@@ -242,12 +297,12 @@
 
             </div>
 
-        {% else %}
+        {% elif store %}
 
             <div class="empty-state">
 
                 <div class="empty-icon">
-                    📦
+                    Products
                 </div>
 
                 <h3>
@@ -263,6 +318,31 @@
                     class="empty-btn"
                 >
                     Add Your First Product
+                </a>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    Store
+                </div>
+
+                <h3>
+                    No Store Yet
+                </h3>
+
+                <p>
+                    Create a store before adding products.
+                </p>
+
+                <a
+                    href="{% url 'store_create' %}"
+                    class="empty-btn"
+                >
+                    Create Your Store
                 </a>
 
             </div>

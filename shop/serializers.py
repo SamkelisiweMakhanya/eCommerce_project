@@ -95,12 +95,22 @@ class RegisterSerializer(serializers.ModelSerializer):
     """Serialize data required to register a new user."""
 
     password = serializers.CharField(write_only=True, min_length=8)
+    email = serializers.EmailField()
 
     class Meta:
         """Define the model and fields used during user registration."""
 
         model = User
         fields = ("username", "email", "password")
+
+    def validate_email(self, value):
+        """Reject email addresses already assigned to an account."""
+        email = value.strip().lower()
+        if User.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError(
+                "An account with this email already exists."
+            )
+        return email
 
     def create(self, validated_data):
         """Create a new user and assign the default buyer role."""

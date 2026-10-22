@@ -1,437 +1,177 @@
+
+{% extends 'shop/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block title %}Buyer Dashboard | SAMKY TECH SHOP{% endblock %}
 
-<head>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop/css/style.css' %}">
+{% endblock %}
 
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Buyer Dashboard | SAMKY TECH SHOP</title>
-    <link rel="stylesheet" href="{% static 'shop/css/style.css' %}">
-
-</head>
-
-
-<body>
-
-
-<!-- ==========================================
-     NAVIGATION
-     ========================================== -->
-
-<nav class="navbar">
-
-
-    <a
-        href="{% url 'home' %}"
-        class="brand"
-    >
-        SAMKY TECH SHOP
-    </a>
-
-
-    <div class="nav-links">
-
-
-        <a href="{% url 'home' %}">
-            Home
-        </a>
-
-
-        <a href="{% url 'product_list' %}">
-            Shop
-        </a>
-
-
-        <a href="{% url 'my_orders' %}">
-            My Orders
-        </a>
-
-
-        <form
-            method="POST"
-            action="{% url 'logout' %}"
-            style="display:inline;"
-        >
-
-            {% csrf_token %}
-
-
-            <button
-                type="submit"
-                class="logout-button"
-            >
-                Logout
-            </button>
-
-        </form>
-
-
-    </div>
-
-</nav>
-
-
-<!-- ==========================================
-     DASHBOARD
-     ========================================== -->
+{% block content %}
 
 <main class="dashboard">
 
-
     <!-- WELCOME -->
-
     <section class="welcome">
-
         <h1>
-            Welcome back,
-            {{ request.user.username }}!
+            Welcome back, {{ request.user.username }}!
         </h1>
-
 
         <p>
             Manage your orders and continue shopping
             from your buyer dashboard.
         </p>
-
     </section>
 
-
-
     <!-- QUICK ACTIONS -->
-
     <section class="quick-actions">
 
-
-        <a
-            href="{% url 'product_list' %}"
-            class="action-card"
-        >
-
-            <div class="action-icon">
-                🛍️
-            </div>
-
-
-            <h3>
-                Continue Shopping
-            </h3>
-
-
+        <a href="{% url 'product_list' %}" class="action-card">
+            <div class="action-icon">🛍️</div>
+            <h3>Continue Shopping</h3>
             <p>
                 Browse our products and discover
                 something you'll love.
             </p>
-
         </a>
 
-
-
-        <a
-            href="{% url 'my_orders' %}"
-            class="action-card"
-        >
-
-            <div class="action-icon">
-                📦
-            </div>
-
-
-            <h3>
-                My Orders
-            </h3>
-
-
+        <a href="{% url 'my_orders' %}" class="action-card">
+            <div class="action-icon">📦</div>
+            <h3>My Orders</h3>
             <p>
                 View your previous purchases and
                 track your orders.
             </p>
-
         </a>
 
-
-
-        <a
-            href="{% url 'product_list' %}"
-            class="action-card"
-        >
-
-            <div class="action-icon">
-                🛒
-            </div>
-
-
-            <h3>
-                Shop Now
-            </h3>
-
-
+        <a href="{% url 'store_list' %}" class="action-card">
+            <div class="action-icon">🛒</div>
+            <h3>Shop Now</h3>
             <p>
                 Explore products from our stores
                 and place a new order.
             </p>
-
         </a>
 
-
     </section>
 
-
-
-    <!-- ======================================
-         STATISTICS
-         ====================================== -->
-
+    <!-- STATISTICS -->
     <section class="stats">
 
-
         <div class="stat-card">
-
-            <div class="stat-label">
-                Total Orders
-            </div>
-
-
-            <div class="stat-number">
-                {{ orders|length }}
-            </div>
-
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-number">{{ orders|length }}</div>
         </div>
 
-
-
         <div class="stat-card">
-
-            <div class="stat-label">
-                Account
-            </div>
-
-
-            <div class="stat-number">
-                Buyer
-            </div>
-
+            <div class="stat-label">Account</div>
+            <div class="stat-number">Buyer</div>
         </div>
 
-
-
         <div class="stat-card">
-
-            <div class="stat-label">
-                Shopping
-            </div>
-
-
-            <div class="stat-number">
-                Active
-            </div>
-
+            <div class="stat-label">Shopping</div>
+            <div class="stat-number">Active</div>
         </div>
-
 
     </section>
 
-
-
-    <!-- ======================================
-         ORDERS
-         ====================================== -->
-
+    <!-- RECENT ORDERS -->
     <section class="orders-section">
 
-
         <div class="section-header">
+            <h2>Recent Orders</h2>
 
-            <h2>
-                Recent Orders
-            </h2>
-
-
-            <a
-                href="{% url 'my_orders' %}"
-                class="view-all"
-            >
+            <a href="{% url 'my_orders' %}" class="view-all">
                 View All Orders →
             </a>
-
         </div>
-
-
 
         {% if orders %}
 
-
             {% for order in orders|slice:":5" %}
-
 
                 <div class="order-card">
 
-
                     <div class="order-top">
 
-
                         <div>
-
                             <div class="order-number">
                                 Order #{{ order.id }}
                             </div>
 
-
                             <div class="order-date">
-
                                 {{ order.created_at|date:"d M Y, H:i" }}
-
                             </div>
-
                         </div>
-
 
                         <div>
-
                             <span class="status">
-
                                 {{ order.get_status_display }}
-
                             </span>
-
                         </div>
 
-
                     </div>
-
-
 
                     <div class="order-details">
 
-
                         <div>
-
-                            <span class="detail-label">
-                                Order Number
-                            </span>
-
-
-                            <span class="detail-value">
-                                #{{ order.id }}
-                            </span>
-
+                            <span class="detail-label">Order Number</span>
+                            <span class="detail-value">#{{ order.id }}</span>
                         </div>
 
-
-
                         <div>
-
-                            <span class="detail-label">
-                                Status
-                            </span>
-
-
+                            <span class="detail-label">Status</span>
                             <span class="detail-value">
                                 {{ order.get_status_display }}
                             </span>
-
                         </div>
 
-
-
                         <div>
-
-                            <span class="detail-label">
-                                Date
-                            </span>
-
-
+                            <span class="detail-label">Date</span>
                             <span class="detail-value">
                                 {{ order.created_at|date:"d M Y" }}
                             </span>
-
                         </div>
-
 
                     </div>
 
-
-
                     <div class="order-actions">
-
                         <a
                             href="{% url 'order_detail' order.id %}"
                             class="view-order"
                         >
                             View Order
                         </a>
-
                     </div>
 
-
                 </div>
-
 
             {% endfor %}
 
-
         {% else %}
-
 
             <div class="empty-orders">
 
+                <div class="empty-icon">📦</div>
 
-                <div class="empty-icon">
-                    📦
-                </div>
-
-
-                <h3>
-                    No Orders Yet
-                </h3>
-
+                <h3>No Orders Yet</h3>
 
                 <p>
                     You haven't placed an order yet.
                     Start shopping to see your orders here.
                 </p>
 
-
-                <a
-                    href="{% url 'product_list' %}"
-                    class="shop-button"
-                >
+                <a href="{% url 'store_list' %}" class="shop-button">
                     Start Shopping
                 </a>
 
-
             </div>
-
 
         {% endif %}
 
-
     </section>
-
 
 </main>
 
-
-<!-- ==========================================
-     FOOTER
-     ========================================== -->
-
-<footer class="footer">
-
-    <p>
-        &copy; 2026 SAMKY TECH SHOP.
-        All rights reserved.
-    </p>
-
-</footer>
-
-
-</body>
-
-</html>
+{% endblock %}
