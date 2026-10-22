@@ -81,7 +81,13 @@ class ShopTestCase(TestCase):
         }
         session.save()
 
-        response = self.client.post(reverse("checkout"))
+        response = self.client.post(
+            reverse("checkout"),
+            {
+                "email": "buyer@example.com",
+                "phone": "0821234567",
+            },
+        )
 
         self.assertEqual(response.status_code, 302)
 
@@ -120,7 +126,13 @@ class ShopTestCase(TestCase):
         }
         session.save()
 
-        self.client.post(reverse("checkout"))
+        self.client.post(
+            reverse("checkout"),
+            {
+                "email": "buyer@example.com",
+                "phone": "0821234567",
+            },
+        )
 
         self.product.refresh_from_db()
 
@@ -137,7 +149,13 @@ class ShopTestCase(TestCase):
         }
         session.save()
 
-        response = self.client.post(reverse("checkout"))
+        response = self.client.post(
+            reverse("checkout"),
+            {
+                "email": "buyer@example.com",
+                "phone": "0821234567",
+            },
+        )
 
         self.assertEqual(response.status_code, 302)
 
@@ -163,6 +181,10 @@ class ShopTestCase(TestCase):
 
         response = self.client.post(
             reverse("checkout"),
+            {
+                "email": "buyer@example.com",
+                "phone": "0821234567",
+            },
         )
 
         self.assertEqual(response.status_code, 302)
