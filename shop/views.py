@@ -1,4 +1,5 @@
 import json
+import re
 from decimal import Decimal
 from functools import wraps
 from io import BytesIO
@@ -8,7 +9,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
+from django.core.validators import validate_email
 from django.db import transaction
 from django.db.models import Avg, ProtectedError, Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1137,32 +1140,48 @@ def build_invoice_pdf(order):
 def checkout(request):
     """
     Process the shopping cart and create a new order.
-
-    During POST requests, products are locked using a database
-    transaction to prevent stock changes from causing incorrect
-    inventory quantities.
-
-    Args:
-        request: The incoming Django HTTP request.
-
-    Returns:
-        Rendered checkout page or redirect to checkout success.
+    Validate the customer's email and South African cellphone number.
     """
     items, total = _get_cart_items(request)
 
     if not items:
-        messages.warning(
-            request,
-            "Your cart is empty.",
-        )
-
+        messages.warning(request, "Your cart is empty.")
         return redirect("cart")
 
     if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        phone = request.POST.get("phone", "").strip()
+
+        # Validate the email address.
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(
+                request,
+                "Please enter a valid email address, "
+                "such as customer@example.com.",
+            )
+            return redirect("checkout")
+
+        # Remove spaces, brackets, and hyphens from the phone number.
+        phone = re.sub(r"[\s()-]", "", phone)
+
+        # Convert international South African format to local format.
+        if phone.startswith("+27"):
+            phone = "0" + phone[3:]
+
+        # Validate a South African cellphone number.
+        if not re.fullmatch(r"0(?:6\d|7\d|8[1-9])\d{7}", phone):
+            messages.error(
+                request,
+                "Please enter a valid South African cellphone number, "
+                "such as 0821234567 or +27821234567.",
+            )
+            return redirect("checkout")
+
         cart_data = _get_cart(request)
 
         with transaction.atomic():
-
             products = (
                 Product.objects
                 .select_for_update()
@@ -1184,52 +1203,31 @@ def checkout(request):
             validated_items = []
 
             for product_id, quantity in cart_data.items():
-
-                product = product_map.get(
-                    str(product_id)
-                )
+                product = product_map.get(str(product_id))
 
                 if product is None:
                     continue
 
                 try:
                     quantity = int(quantity)
-
                 except (TypeError, ValueError):
                     quantity = 1
 
-                quantity = max(
-                    quantity,
-                    1,
-                )
+                quantity = max(quantity, 1)
 
                 if quantity > product.stock:
                     messages.error(
                         request,
                         f"Not enough stock available for {product.name}.",
                     )
-
                     return redirect("cart")
 
-                item_total = (
-                    product.price * quantity
-                )
-
+                item_total = product.price * quantity
                 order_total += item_total
-
-                validated_items.append(
-                    (
-                        product,
-                        quantity,
-                    )
-                )
+                validated_items.append((product, quantity))
 
             if not validated_items:
-                messages.warning(
-                    request,
-                    "Your cart is empty.",
-                )
-
+                messages.warning(request, "Your cart is empty.")
                 return redirect("cart")
 
             order = Order.objects.create(
@@ -1239,7 +1237,6 @@ def checkout(request):
             )
 
             for product, quantity in validated_items:
-
                 OrderItem.objects.create(
                     order=order,
                     product=product,
@@ -1248,24 +1245,20 @@ def checkout(request):
                 )
 
                 product.stock -= quantity
-
-                product.save(
-                    update_fields=["stock"]
-                )
+                product.save(update_fields=["stock"])
 
             invoice_lines = [
                 "INVOICE",
                 "=======",
                 f"Order ID: {order.id}",
                 f"Customer: {request.user.username}",
-                f"Email: {request.user.email}",
+                f"Email: {email}",
                 "",
                 "Items:",
             ]
 
             for item in order.items.select_related("product").all():
                 subtotal = item.price * item.quantity
-
                 invoice_lines.append(
                     f"- {item.product.name} x {item.quantity} "
                     f"@ R{item.price:.2f} = R{subtotal:.2f}"
@@ -1285,7 +1278,7 @@ def checkout(request):
                 subject=f"Invoice for Order #{order.id}",
                 body="\n".join(invoice_lines),
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[request.user.email],
+                to=[email],
             )
 
             invoice.attach(
@@ -1299,15 +1292,9 @@ def checkout(request):
             request.session["cart"] = {}
             request.session.modified = True
 
-            return redirect(
-                "checkout_success",
-                order_id=order.id,
-            )
+            return redirect("checkout_success", order_id=order.id)
 
-    total_quantity = sum(
-        item["quantity"]
-        for item in items
-    )
+    total_quantity = sum(item["quantity"] for item in items)
 
     return render(
         request,
