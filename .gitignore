@@ -20,7 +20,8 @@ staticfiles/
 
 # Local databases and backups
 *.sqlite3
-*.sql
+*.sqlite
+*.db
 *.bak
 backups/
 
@@ -37,3 +38,4 @@ media/
 .idea/
 .DS_Store
 Thumbs.db
+*.sql

@@ -20,7 +20,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 # ---------------------------------------------------------------------------
@@ -111,17 +111,17 @@ WSGI_APPLICATION = "project.wsgi.application"
 #
 # Database credentials should be supplied through environment variables
 # rather than stored directly in source code.
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DB_NAME", "ecommerce_db"),
-        "USER": "ecommerce_app",
-        "PASSWORD": "FreshDb_8246!",
+        "USER": os.environ.get("DB_USER", "ecommerce_app"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
         "HOST": os.environ.get("DB_HOST", "localhost"),
         "PORT": os.environ.get("DB_PORT", "3306"),
     }
 }
-
 
 # ---------------------------------------------------------------------------
 # Password validation
