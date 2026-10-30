@@ -1,4 +1,4 @@
-{% extends "shop/base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}{{ product.name }} - SAMKY TECH SHOP{% endblock %}
 
@@ -215,7 +215,7 @@
 
             {% if product.stock > 0 %}
                 <p class="stock-available">
-                    ✓ {{ product.stock }} available
+                    âœ“ {{ product.stock }} available
                 </p>
             {% else %}
                 <p class="stock-unavailable">
@@ -263,7 +263,7 @@
                 {% endif %}
 
                 <div class="review-rating">
-                    ★ {{ review.rating }}/5
+                    â˜… {{ review.rating }}/5
                 </div>
 
                 <div class="review-comment">
@@ -309,3 +309,4 @@
 </div>
 
 {% endblock %}
+

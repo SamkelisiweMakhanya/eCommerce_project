@@ -1,4 +1,4 @@
-"""
+﻿"""
 Django settings for the e-commerce project.
 
 This module contains the configuration required to run the Django
@@ -86,7 +86,7 @@ ROOT_URLCONF = "project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -251,3 +251,4 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API documentation for the e-commerce project.",
     "VERSION": "1.0.0",
 }
+
