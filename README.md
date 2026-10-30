@@ -24,7 +24,7 @@ SAMKY TECH SHOP is a Django-based eCommerce application for browsing technology 
 - Python
 - Django
 - MariaDB
-- MySQLclient
+- mysqlclient
 - Pillow
 - Django REST Framework
 - drf-spectacular
@@ -47,8 +47,6 @@ git clone https://github.com/SamkelisiweMakhanya/eCommerce_project.git
 cd eCommerce_project
 
 ### 3. Create and activate a virtual environment
-
-Windows PowerShell:
 
 python -m venv venv
 .\venv\Scripts\Activate.ps1
@@ -137,14 +135,14 @@ The project provides REST API endpoints for application functionality. Interacti
 
 ## Project Structure
 
-- `project/` — Django settings and URL configuration
-- `shop/` — Application models, views, serializers, and migrations
-- `templates/` — Shared HTML templates
-- `static/` — Static assets
-- `media/` — Uploaded product images
-- `manage.py` — Django management utility
-- `requirements.txt` — Python dependencies
-- `.env` — Local environment variables; do not commit this file
+- `project/` - Django settings and URL configuration
+- `shop/` - Application models, views, serializers, and migrations
+- `templates/` - Shared HTML templates
+- `static/` - Static assets
+- `media/` - Uploaded product images
+- `manage.py` - Django management utility
+- `requirements.txt` - Python dependencies
+- `.env` - Local environment variables; do not commit this file
 
 ## Security
 
