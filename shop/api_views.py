@@ -1,11 +1,10 @@
 """API views for the eCommerce application.
 
 This module provides REST API endpoints for authentication, stores,
-products, reviews, orders, payments, and Reddit posts.
+products, reviews, orders, and payments.
 """
 
 from decimal import Decimal
-from typing import ClassVar
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -18,7 +17,6 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from functions.reddit import get_reddit_posts
 
 from .models import Order, OrderItem, Product, Review, Store
 from .serializers import (
@@ -636,36 +634,3 @@ class PayOrderAPIView(APIView):
             OrderSerializer(order).data,
             status=200,
         )
-
-
-@extend_schema(
-    responses={
-        200: OpenApiResponse(
-            description="Reddit posts from r/django."
-        ),
-        503: OpenApiResponse(
-            description="Reddit is unavailable."
-        ),
-    }
-)
-class RedditPostsAPIView(APIView):
-    """Provide an API endpoint for retrieving Django Reddit posts."""
-
-    permission_classes: ClassVar[list] = [permissions.AllowAny]
-
-    def get(self, request):
-        """Retrieve and return posts from the Django subreddit.
-
-        Args:
-            request: The HTTP request received from the API client.
-
-        Returns:
-            A response containing Reddit posts, or a 503 response when
-            Reddit is unavailable.
-        """
-        data = get_reddit_posts("django")
-
-        if "error" in data:
-            return Response(data, status=503)
-
-        return Response(data)

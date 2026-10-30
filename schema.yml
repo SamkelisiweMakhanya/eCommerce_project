@@ -7,6 +7,15 @@ paths:
   /api/login/:
     post:
       operationId: login_create
+      description: |-
+        Authenticate a user using the supplied username and password.
+
+        Args:
+            request: The HTTP request containing login credentials.
+
+        Returns:
+            A response containing the authentication token and user
+            information, or an error response for invalid credentials.
       tags:
       - login
       requestBody:
@@ -31,6 +40,7 @@ paths:
   /api/orders/:
     get:
       operationId: orders_list
+      description: Return the authenticated buyer's orders.
       tags:
       - orders
       security:
@@ -47,6 +57,7 @@ paths:
   /api/orders/{order_id}/:
     get:
       operationId: orders_retrieve
+      description: Return details for a single order belonging to the buyer.
       parameters:
       - in: path
         name: order_id
@@ -67,6 +78,15 @@ paths:
   /api/orders/{order_id}/cancel/:
     post:
       operationId: orders_cancel_create
+      description: |-
+        Cancel the specified pending order.
+
+        Args:
+            request: The HTTP request from the authenticated buyer.
+            order_id: The database ID of the order to cancel.
+
+        Returns:
+            A response containing the cancelled order or an error message.
       parameters:
       - in: path
         name: order_id
@@ -87,6 +107,7 @@ paths:
   /api/orders/{order_id}/pay/:
     post:
       operationId: orders_pay_create
+      description: Mark a pending order as paid atomically.
       parameters:
       - in: path
         name: order_id
@@ -107,6 +128,14 @@ paths:
   /api/orders/create/:
     post:
       operationId: orders_create_create
+      description: |-
+        Create an order from the submitted products and quantities.
+
+        Args:
+            request: The HTTP request containing order data.
+
+        Returns:
+            A response containing the created order or an error message.
       tags:
       - orders
       requestBody:
@@ -130,50 +159,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Order'
           description: ''
-  /api/reddit/django/:
-    get:
-      operationId: reddit_django_retrieve
+  /api/register/:
+    post:
+      operationId: register_create
+      description: |-
+        Register a new user through the REST API.
+
+        Args:
+            request: Django REST Framework request containing
+                registration data.
+
+        Returns:
+            HTTP 201 with user information when registration succeeds,
+            or HTTP 400 with validation errors when it fails.
       tags:
-      - reddit
+      - register
       security:
       - tokenAuth: []
       - {}
       responses:
         '200':
-          description: Reddit posts from r/django.
-        '503':
-          description: Reddit is unavailable.
-  /api/register/:
-    post:
-      operationId: register_create
-      tags:
-      - register
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Register'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Register'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Register'
-        required: true
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  username:
-                    type: string
-                  email:
-                    type: string
-          description: ''
+          description: No response body
   /api/schema/:
     get:
       operationId: schema_retrieve
@@ -323,6 +329,7 @@ paths:
   /api/stores/:
     get:
       operationId: stores_list
+      description: List existing stores and allow vendors to create new stores.
       tags:
       - stores
       security:
@@ -338,6 +345,7 @@ paths:
           description: ''
     post:
       operationId: stores_create
+      description: List existing stores and allow vendors to create new stores.
       tags:
       - stores
       requestBody:
@@ -364,6 +372,7 @@ paths:
   /api/stores/{store_id}/products/:
     get:
       operationId: stores_products_list
+      description: List products for a store and allow its vendor to add products.
       parameters:
       - in: path
         name: store_id
@@ -385,6 +394,7 @@ paths:
           description: ''
     post:
       operationId: stores_products_create
+      description: List products for a store and allow its vendor to add products.
       parameters:
       - in: path
         name: store_id
@@ -471,6 +481,7 @@ paths:
   /api/vendor/orders/:
     get:
       operationId: vendor_orders_list
+      description: Return orders containing the authenticated vendor's products.
       tags:
       - vendor
       security:
@@ -487,6 +498,7 @@ paths:
   /api/vendor/orders/{order_id}/:
     get:
       operationId: vendor_orders_retrieve
+      description: Return details of an order associated with the authenticated vendor.
       parameters:
       - in: path
         name: order_id
@@ -507,6 +519,7 @@ paths:
   /api/vendor/orders/{order_id}/status/:
     patch:
       operationId: vendor_orders_status_partial_update
+      description: Allow vendors to update order status safely.
       parameters:
       - in: path
         name: order_id
@@ -538,6 +551,7 @@ paths:
   /api/vendors/{vendor_id}/stores/:
     get:
       operationId: vendors_stores_list
+      description: List all stores belonging to a specified vendor.
       parameters:
       - in: path
         name: vendor_id
@@ -562,6 +576,7 @@ components:
   schemas:
     CreateOrder:
       type: object
+      description: Validate the list of items submitted when creating an order.
       properties:
         items:
           type: array
@@ -571,6 +586,7 @@ components:
       - items
     CreateOrderItem:
       type: object
+      description: Validate product and quantity data for a new order item.
       properties:
         product:
           type: integer
@@ -583,6 +599,7 @@ components:
       - quantity
     Login:
       type: object
+      description: Validate username and password data for API authentication.
       properties:
         username:
           type: string
@@ -594,6 +611,7 @@ components:
       - username
     Order:
       type: object
+      description: Serialize order information and its associated order items.
       properties:
         id:
           type: integer
@@ -628,6 +646,7 @@ components:
       - total
     OrderItem:
       type: object
+      description: Serialize individual order items with product and store details.
       properties:
         id:
           type: integer
@@ -670,11 +689,13 @@ components:
         * `CANCELLED` - Cancelled
     PatchedVendorOrderStatus:
       type: object
+      description: Validate order status updates submitted by vendors.
       properties:
         status:
           $ref: '#/components/schemas/VendorOrderStatusStatusEnum'
     Product:
       type: object
+      description: Serialize product information for API requests and responses.
       properties:
         id:
           type: integer
@@ -705,32 +726,9 @@ components:
       - name
       - price
       - store
-    Register:
-      type: object
-      properties:
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-        email:
-          title: Email address
-          oneOf:
-          - type: string
-            format: email
-            maxLength: 254
-          - type: string
-            maxLength: 0
-        password:
-          type: string
-          writeOnly: true
-          minLength: 8
-      required:
-      - password
-      - username
     Review:
       type: object
+      description: Serialize product reviews with buyer and product information.
       properties:
         id:
           type: integer
@@ -772,6 +770,7 @@ components:
       - verified
     Store:
       type: object
+      description: Serialize store information and its associated products.
       properties:
         id:
           type: integer

@@ -36,7 +36,7 @@ Database operations that affect multiple related records should use database tra
 
 ## External Service Failure
 
-If an external service such as Reddit is unavailable, the API should return an appropriate error response rather than causing the entire application to fail.
+If an external service is unavailable, the application should handle the failure gracefully and return an appropriate error response rather than causing the entire application to fail.
 
 ## Password Reset Failure
 

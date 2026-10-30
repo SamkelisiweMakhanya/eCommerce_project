@@ -1,9 +1,7 @@
-import json
 import re
 from decimal import Decimal
 from functools import wraps
 from io import BytesIO
-from urllib.request import Request, urlopen
 
 from django.conf import settings
 from django.contrib import messages
@@ -54,37 +52,6 @@ def role_required(required_role):
 
         return wrapper
     return decorator
-
-
-def get_reddit_posts(subreddit, limit=10):
-    """
-    Fetch recent posts from a Reddit subreddit.
-
-    Args:
-        subreddit: The name of the Reddit subreddit.
-        limit: Maximum number of posts to retrieve.
-
-    Returns:
-        A list of Reddit post data dictionaries. Returns an empty
-        list if Reddit is unavailable or the response is invalid.
-    """
-    url = f"https://www.reddit.com/r/{subreddit}/new.json?limit={limit}"
-    request = Request(
-        url,
-        headers={"User-Agent": "ecommerce-project/1.0"},
-    )
-
-    try:
-        with urlopen(request, timeout=5) as response:
-            data = json.load(response)
-
-    except (OSError, ValueError, json.JSONDecodeError):
-        return []
-
-    return [
-        child.get("data", {})
-        for child in data.get("data", {}).get("children", [])
-    ]
 
 
 # ============================================================
@@ -1448,34 +1415,6 @@ def store_detail(request, store_id):
         {
             "store": store,
             "products": products,
-        },
-    )
-
-
-# ============================================================
-# REDDIT FEED
-# ============================================================
-
-
-def reddit_feed(request):
-    """
-    Display recent posts from the Django subreddit.
-
-    Args:
-        request: The incoming Django HTTP request.
-
-    Returns:
-        Rendered Reddit feed page.
-    """
-    posts = get_reddit_posts(
-        "django"
-    )
-
-    return render(
-        request,
-        "shop/reddit_feed.html",
-        {
-            "posts": posts or [],
         },
     )
 

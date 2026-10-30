@@ -16,7 +16,6 @@ from .api_views import (
     MyOrdersAPIView,
     PayOrderAPIView,
     ProductCreateView,
-    RedditPostsAPIView,
     StoreCreateView,
     StoreReviewsView,
     VendorOrderDetailAPIView,
@@ -164,9 +163,6 @@ urlpatterns = [
         name="order_detail",
     ),
 
-    # Reddit feed.
-    path("reddit/", views.reddit_feed, name="reddit_feed"),
-
     # Store and vendor API endpoints.
     path(
         "api/stores/",
@@ -203,13 +199,6 @@ urlpatterns = [
         "api/login/",
         LoginAPIView.as_view(),
         name="api-login",
-    ),
-
-    # Reddit API endpoint.
-    path(
-        "api/reddit/django/",
-        RedditPostsAPIView.as_view(),
-        name="reddit-django",
     ),
 
     # Buyer order API endpoints.
@@ -312,14 +301,5 @@ urlpatterns = [
         name="submit_review",
     ),
 
-
-    # Note:
-    # The original file contained a second Reddit URL with a different
-    # URL name. It is preserved here to avoid changing functionality.
-    path(
-        "reddit/",
-        views.reddit_feed,
-        name="reddit-feed",
-    ),
 
 ]
