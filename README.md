@@ -4,142 +4,151 @@ SAMKY TECH SHOP is a Django-based eCommerce application for browsing technology 
 
 ## Features
 
-* User registration and login
-* User logout
-* Product catalogue
-* Product search
-* Product sorting
-* Product detail pages
-* Product images
-* Shopping cart
-* Checkout
-* Order management
-* Buyer dashboard
-* Customer reviews
-* Product stock management
-* Django Admin
-* REST API
-* API documentation with Swagger
-* MariaDB database
+- User registration and login
+- User logout
+- Product catalogue
+- Product search and sorting
+- Product detail pages and images
+- Shopping cart and checkout
+- Order management
+- Buyer dashboard
+- Customer reviews
+- Product stock management
+- Django Admin
+- REST API
+- API documentation with Swagger
+- MariaDB database
 
 ## Technologies
 
-* Python
-* Django
-* MariaDB
-* MySQLclient
-* Pillow
-* Django REST Framework
-* drf-spectacular
-* python-dotenv
+- Python
+- Django
+- MariaDB
+- MySQLclient
+- Pillow
+- Django REST Framework
+- drf-spectacular
+- python-dotenv
+
+## Prerequisites
+
+Install Python, Git, and MariaDB Server before setting up the project.
 
 ## Project Setup
 
-### 1. Create and activate the virtual environment
+### 1. Clone the GitHub repository
+
+Open PowerShell in the directory where you want to save the project.
+
+git clone https://github.com/SamkelisiweMakhanya/eCommerce_project.git
+
+### 2. Enter the project folder
+
+cd eCommerce_project
+
+### 3. Create and activate a virtual environment
 
 Windows PowerShell:
 
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 
-### 2. Install dependencies
+### 4. Install dependencies
 
-pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 
-### 3. Configure environment variables
+### 5. Create the MariaDB database
 
-Create a .env file in the project root.
+Log in to MariaDB using an account with permission to create databases.
 
-The file should contain:
+CREATE DATABASE ecommerce_db
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 
-DJANGO_SECRET_KEY=your-secret-key
+Create a dedicated database account if one does not already exist:
+
+CREATE USER 'ecommerce_app'@'localhost'
+    IDENTIFIED BY 'choose-a-password-for-this-installation';
+
+GRANT ALL PRIVILEGES ON ecommerce_db.*
+    TO 'ecommerce_app'@'localhost';
+
+If the account already exists, use its existing credentials instead of creating it again.
+
+### 6. Configure environment variables
+
+Create a `.env` file in the project root, alongside `manage.py`.
+
+Add the following settings using your own secret key and database password:
+
+DJANGO_SECRET_KEY=your-django-secret-key
 DB_NAME=ecommerce_db
-DB_USER=root
+DB_USER=ecommerce_app
 DB_PASSWORD=your-database-password
 DB_HOST=localhost
 DB_PORT=3306
 
-Do not commit the .env file to source control.
+Do not commit `.env` to GitHub or share it publicly.
 
-### 4. Apply migrations
+### 7. Apply database migrations
 
-python manage.py makemigrations
 python manage.py migrate
 
-### 5. Start the development server
+Migrations create the database schema. They do not automatically restore existing products, customer accounts, orders, or other data from a previous database.
+
+### 8. Check the project
+
+python manage.py check
+
+### 9. Start the development server
 
 python manage.py runserver
 
-The application will be available at:
+Open the application at:
 
 http://127.0.0.1:8000/
 
 ## Main Pages
 
-* Home: /
-* Products: /products/
-* Cart: /cart/
-* Orders: /orders/
-* Buyer Dashboard: /buyer/
-* Vendor Dashboard: /vendor/
-* Admin: /admin/
-* API Documentation: /api/docs/
-* API Schema: /api/schema/
-
-## Media Files
-
-Uploaded product images are stored in the media/products/ directory during development.
+- Home: `/`
+- Products: `/products/`
+- Cart: `/cart/`
+- Orders: `/orders/`
+- Buyer Dashboard: `/buyer/`
+- Vendor Dashboard: `/vendor/`
+- Admin: `/admin/`
+- API Documentation: `/api/docs/`
+- API Schema: `/api/schema/`
 
 ## Database
 
-The project uses MariaDB through Django's MySQL database backend.
+The application uses MariaDB through Django's MySQL database backend. Database connection settings are read from environment variables in `.env`.
 
-Database credentials are loaded from environment variables defined in .env.
+The SQLite database file is not required for the submitted project. To recreate the database structure, create the MariaDB database and run `python manage.py migrate`.
+
+## Media Files
+
+Uploaded product images are stored in the `media/` directory during development. Include any required sample assets in the submission, but do not include private uploads or sensitive user data.
 
 ## API
 
-The project provides REST API endpoints for authentication, stores, products, orders, vendor order management, reviews, and Reddit data.
-
-Interactive API documentation is available at:
-
-/api/docs/
-
-The OpenAPI schema is available at:
-
-/api/schema/
-
-## Development Note
-
-The Django development server is intended for development and testing. Production deployment requires appropriate security settings, a production web server, HTTPS, secure secret management, and production database configuration.
+The project provides REST API endpoints for application functionality. Interactive API documentation is available at `/api/docs/`, and the OpenAPI schema is available at `/api/schema/`.
 
 ## Project Structure
 
-- `project/` — Django project configuration and URL routing.
-- `shop/` — Ecommerce application, models, views, serializers, and migrations.
-- `static/` — Static assets such as CSS, JavaScript, and images.
-- `media/` — Uploaded media files used during development.
-- `api_examples/` — Sample JSON requests and responses for API testing.
-- `backups/` — Local database and data backups; keep these private.
-- `manage.py` — Django management utility.
-- `requirements.txt` — Python dependencies.
-- `.env` — Local environment variables; do not commit this file.
-
-## Running Tests and Checks
-
-Run Django's system checks:
-
-    python manage.py check
-
-Apply existing migrations:
-
-    python manage.py migrate
-
-Start the development server:
-
-    python manage.py runserver
+- `project/` — Django settings and URL configuration
+- `shop/` — Application models, views, serializers, and migrations
+- `templates/` — Shared HTML templates
+- `static/` — Static assets
+- `media/` — Uploaded product images
+- `manage.py` — Django management utility
+- `requirements.txt` — Python dependencies
+- `.env` — Local environment variables; do not commit this file
 
 ## Security
 
-- Never commit `.env`, database credentials, or backups containing personal data.
-- Use a dedicated database account rather than the database administrator account.
-- Use HTTPS, secure settings, and a production-ready server when deploying.
+- Never commit `.env`, passwords, private database files, or sensitive backups.
+- Use a dedicated database account instead of the MariaDB administrator account.
+- Use secure settings, HTTPS, and a production-ready server when deploying.
+- The Django development server is intended for local development and testing only.
